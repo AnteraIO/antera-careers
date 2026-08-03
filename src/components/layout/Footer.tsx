@@ -15,7 +15,7 @@ export function Footer() {
           {/* Social links */}
           <div className="flex items-center gap-2 order-1 sm:order-2">
             <a 
-              href="https://github.com/zuck30"
+              href="https://github.com/antera"
               className="p-2 border-2 border-neutral-200 text-neutral-700 hover:border-black hover:text-black transition-all"
               aria-label="GitHub"
               target="_blank"
@@ -24,7 +24,7 @@ export function Footer() {
               <Github className="h-4 w-4" />
             </a>
             <a 
-              href="https://www.linkedin.com/in/shadrackovsky" 
+              href="https://www.linkedin.com/in/antera_tz" 
               className="p-2 border-2 border-neutral-200 text-neutral-700 hover:border-black hover:text-black transition-all"
               aria-label="LinkedIn"
               target="_blank"
