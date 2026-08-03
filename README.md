@@ -1,4 +1,9 @@
-# Welcome to Antera Careeer.
+# Join Antera and Shape the Future of Engineering and AI in Africa.
+
+> [!IMPORTANT]
+Join us to design, research, and develop world-class systems with a highly-motivated team.
+
+<!-- # Welcome to Antera Careeer.
 
 # 🛠️ Tech Stack & Key Features
 
@@ -50,4 +55,4 @@ npm run build
 * **Credentials:** Log in with any Supabase Auth user that matches your `VITE_ADMIN_EMAIL` environment variable.
 * **Dashboard Tab 1 (Jobs):** Allows full CRUD operations (Create, Read, Update, Delete) on vacancies. You can edit requirements or benefits line-by-line and toggling publishing instantly.
 * **Dashboard Tab 2 (Applications):** Monitor and review incoming candidates. You can view their uploaded resume PDF, cover letters, and downloaded motivation letter PDFs, and seamlessly advance or reject candidates with a status dropdown selector.
-
+ -->
