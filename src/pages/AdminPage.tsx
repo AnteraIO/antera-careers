@@ -437,13 +437,13 @@ export function AdminPage() {
 
               {/* Cover Letter Pitch */}
               {app.cover_letter && (
-                <div className="border-l-4 border-neutral-300 pl-4 py-1.5 bg-neutral-50/50 mb-4">
+                <div className="border-l-4 border-neutral-300 pl-4 py-1.5 bg-neutral-50/50 mb-4 text-left">
                   <p className="text-xs font-mono text-neutral-500 font-bold uppercase mb-1">Recruiter Pitch / Cover Letter:</p>
                   <p className="text-sm text-neutral-700 whitespace-pre-line leading-relaxed">{app.cover_letter}</p>
                 </div>
               )}
 
-              {/* Action Links (Resume, LinkedIn, etc) */}
+              {/* Action Links (Resume, LinkedIn, Motivation letter, etc) */}
               <div className="flex flex-wrap gap-2.5">
                 {app.resume_url && (
                   <a
@@ -452,7 +452,18 @@ export function AdminPage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 border-2 border-black bg-[#FA520F] text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider hover:bg-black transition-colors"
                   >
-                    View Resume
+                    View Resume PDF
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+                {app.motivation_letter_url && (
+                  <a
+                    href={app.motivation_letter_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 border-2 border-black bg-[#FA520F] text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider hover:bg-black transition-colors"
+                  >
+                    View Motivation Letter PDF
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 )}

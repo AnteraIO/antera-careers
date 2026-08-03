@@ -25,6 +25,7 @@ export interface JobApplication {
   email: string
   phone: string | null
   resume_url: string | null
+  motivation_letter_url: string | null
   cover_letter: string | null
   linkedin_url: string | null
   portfolio_url: string | null

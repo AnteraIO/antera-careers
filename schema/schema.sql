@@ -35,6 +35,7 @@ CREATE TABLE job_applications (
   email TEXT NOT NULL,
   phone TEXT,
   resume_url TEXT,
+  motivation_letter_url TEXT,
   cover_letter TEXT,
   linkedin_url TEXT,
   portfolio_url TEXT,

@@ -1,5 +1,5 @@
 import { useJob } from '@/hooks/useJobs'
-import { Briefcase, Eye, ArrowLeft, Share2, ChevronUp, Twitter, Linkedin, MessageCircle, DollarSign, MapPin, Download } from 'lucide-react'
+import { Briefcase, Eye, ArrowLeft, Share2, ChevronUp, Twitter, Linkedin, MessageCircle, DollarSign, MapPin, Download, Upload, FileText } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
@@ -18,7 +18,16 @@ export function PostDetail() {
   const [linkedinUrl, setLinkedinUrl] = useState('')
   const [portfolioUrl, setPortfolioUrl] = useState('')
   const [coverLetter, setCoverLetter] = useState('')
+
+  // File Upload State
   const [resumeUrl, setResumeUrl] = useState('')
+  const [resumeFile, setResumeFile] = useState<File | null>(null)
+  const [isUploadingResume, setIsUploadingResume] = useState(false)
+
+  const [motivationLetterUrl, setMotivationLetterUrl] = useState('')
+  const [motivationFile, setMotivationFile] = useState<File | null>(null)
+  const [isUploadingMotivation, setIsUploadingMotivation] = useState(false)
+
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -265,9 +274,66 @@ export function PostDetail() {
     }
   }
 
+  // Handle direct file uploads to Supabase storage bucket
+  const uploadFile = async (file: File, bucket: string = 'post-images'): Promise<string> => {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Math.random()}.${fileExt}`
+    const filePath = `applications/${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file)
+
+    if (uploadError) throw uploadError
+
+    const { data: { publicUrl } } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(filePath)
+
+    return publicUrl
+  }
+
+  const handleResumeFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setResumeFile(file)
+
+    try {
+      setIsUploadingResume(true)
+      const url = await uploadFile(file)
+      setResumeUrl(url)
+      toast.success('Resume uploaded successfully!')
+    } catch (err: any) {
+      toast.error('File storage upload failed, but you can still submit a URL link below instead. Error: ' + err.message)
+    } finally {
+      setIsUploadingResume(false)
+    }
+  }
+
+  const handleMotivationFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setMotivationFile(file)
+
+    try {
+      setIsUploadingMotivation(true)
+      const url = await uploadFile(file)
+      setMotivationLetterUrl(url)
+      toast.success('Motivation letter uploaded successfully!')
+    } catch (err: any) {
+      toast.error('File storage upload failed, but you can still submit a URL link or cover letter instead. Error: ' + err.message)
+    } finally {
+      setIsUploadingMotivation(false)
+    }
+  }
+
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!job) return
+
+    // Require either uploaded file url or typed text url
+    const finalResume = resumeUrl || 'https://example.com/uploaded_resume.pdf'
+    const finalMotivation = motivationLetterUrl || ''
 
     try {
       setSubmitting(true)
@@ -281,7 +347,8 @@ export function PostDetail() {
           linkedin_url: linkedinUrl,
           portfolio_url: portfolioUrl,
           cover_letter: coverLetter,
-          resume_url: resumeUrl || 'https://example.com/uploaded_resume.pdf',
+          resume_url: finalResume,
+          motivation_letter_url: finalMotivation,
           status: 'Pending'
         }])
 
@@ -297,6 +364,9 @@ export function PostDetail() {
       setPortfolioUrl('')
       setCoverLetter('')
       setResumeUrl('')
+      setResumeFile(null)
+      setMotivationLetterUrl('')
+      setMotivationFile(null)
     } catch (err: any) {
       toast.error('Failed to submit application: ' + err.message)
     } finally {
@@ -527,7 +597,7 @@ export function PostDetail() {
               </button>
             </div>
 
-            <form onSubmit={handleApply} className="space-y-4">
+            <form onSubmit={handleApply} className="space-y-4 text-left">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Full Name *</label>
@@ -562,20 +632,6 @@ export function PostDetail() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Resume Link / URL *</label>
-                  <input
-                    type="url"
-                    placeholder="Link to PDF, Google Drive, or OneDrive"
-                    value={resumeUrl}
-                    onChange={e => setResumeUrl(e.target.value)}
-                    required
-                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
                   <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">LinkedIn Profile URL</label>
                   <input
                     type="url"
@@ -584,6 +640,71 @@ export function PostDetail() {
                     className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
                   />
                 </div>
+              </div>
+
+              {/* PDF Document Uploads & Link Fallback Inputs */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-dashed border-neutral-300">
+                {/* Resume Upload */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700 flex items-center gap-1">
+                    <FileText className="h-3.5 w-3.5 text-[#FA520F]" />
+                    Upload Resume PDF *
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="cursor-pointer flex items-center gap-1.5 border-2 border-black bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase hover:bg-neutral-100 transition-colors">
+                      <Upload className="h-3.5 w-3.5" />
+                      {resumeFile ? resumeFile.name.substring(0, 15) + '...' : 'Choose File'}
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="hidden"
+                        onChange={handleResumeFileChange}
+                        disabled={isUploadingResume}
+                      />
+                    </label>
+                    {isUploadingResume && <span className="text-[9px] font-mono animate-pulse">Uploading...</span>}
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="Or enter PDF URL directly"
+                    value={resumeUrl}
+                    onChange={e => setResumeUrl(e.target.value)}
+                    required
+                    className="w-full border-2 border-neutral-300 p-2 text-xs focus:border-black outline-none font-mono"
+                  />
+                </div>
+
+                {/* Motivation Letter Upload */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700 flex items-center gap-1">
+                    <FileText className="h-3.5 w-3.5 text-[#FA520F]" />
+                    Upload Motivation Letter PDF
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="cursor-pointer flex items-center gap-1.5 border-2 border-black bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase hover:bg-neutral-100 transition-colors">
+                      <Upload className="h-3.5 w-3.5" />
+                      {motivationFile ? motivationFile.name.substring(0, 15) + '...' : 'Choose File'}
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="hidden"
+                        onChange={handleMotivationFileChange}
+                        disabled={isUploadingMotivation}
+                      />
+                    </label>
+                    {isUploadingMotivation && <span className="text-[9px] font-mono animate-pulse">Uploading...</span>}
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="Or enter PDF URL directly"
+                    value={motivationLetterUrl}
+                    onChange={e => setMotivationLetterUrl(e.target.value)}
+                    className="w-full border-2 border-neutral-300 p-2 text-xs focus:border-black outline-none font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-1">
                 <div className="space-y-1">
                   <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Portfolio URL / Website</label>
                   <input
@@ -596,11 +717,11 @@ export function PostDetail() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Cover Letter / Pitch</label>
+                <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Cover Letter (Optional comments / Pitch)</label>
                 <textarea
                   value={coverLetter}
                   onChange={e => setCoverLetter(e.target.value)}
-                  rows={4}
+                  rows={3}
                   className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
                   placeholder="Tell us why you are a great fit for this job!"
                 />
@@ -616,8 +737,8 @@ export function PostDetail() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="border-2 border-black bg-[#FA520F] text-white px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider"
+                  disabled={submitting || isUploadingResume || isUploadingMotivation}
+                  className="border-2 border-black bg-[#FA520F] text-white px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider disabled:opacity-50"
                 >
                   {submitting ? 'Submitting...' : 'Submit Application'}
                 </button>
