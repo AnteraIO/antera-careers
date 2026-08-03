@@ -355,7 +355,12 @@ export function PostDetail() {
     e.preventDefault()
     if (!job) return
 
-    const finalResume = resumeUrl || 'https://example.com/uploaded_resume.pdf'
+    if (!resumeUrl) {
+      toast.error('Please upload your resume PDF to submit the application.')
+      return
+    }
+
+    const finalResume = resumeUrl
     const finalMotivation = motivationLetterUrl || ''
 
     try {
@@ -655,28 +660,22 @@ export function PostDetail() {
                     <FileText className="h-3.5 w-3.5 text-[#FA520F]" />
                     Upload Resume PDF *
                   </label>
-                  <div className="flex items-center gap-2">
-                    <label className="cursor-pointer flex items-center gap-1.5 border-2 border-neutral-300 hover:border-black bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase transition-colors">
-                      <Upload className="h-3.5 w-3.5" />
-                      {resumeFile ? resumeFile.name.substring(0, 15) + '...' : 'Choose File'}
+                  <div className="flex flex-col gap-2">
+                    <label className="cursor-pointer flex items-center justify-center gap-1.5 border-2 border-neutral-300 hover:border-black bg-white px-3 py-3 font-mono text-[10px] font-bold uppercase transition-colors text-center">
+                      <Upload className="h-4 w-4 text-[#FA520F]" />
+                      {resumeFile ? resumeFile.name : 'Choose Resume PDF'}
                       <input
                         type="file"
                         accept="application/pdf"
                         className="hidden"
                         onChange={handleResumeFileChange}
                         disabled={isUploadingResume}
+                        required={!resumeUrl}
                       />
                     </label>
-                    {isUploadingResume && <span className="text-[9px] font-mono animate-pulse">Uploading...</span>}
+                    {isUploadingResume && <span className="text-[10px] font-mono animate-pulse text-neutral-600 text-center">Uploading Resume...</span>}
+                    {resumeUrl && <span className="text-[10px] font-mono text-green-600 font-bold text-center">✓ Resume Uploaded Successfully</span>}
                   </div>
-                  <input
-                    type="url"
-                    placeholder="Or enter PDF URL directly"
-                    value={resumeUrl}
-                    onChange={e => setResumeUrl(e.target.value)}
-                    required
-                    className="w-full border-2 border-neutral-300 p-2 text-xs focus:border-black outline-none font-mono"
-                  />
                 </div>
 
                 <div className="space-y-2">
@@ -684,10 +683,10 @@ export function PostDetail() {
                     <FileText className="h-3.5 w-3.5 text-[#FA520F]" />
                     Upload Motivation Letter PDF
                   </label>
-                  <div className="flex items-center gap-2">
-                    <label className="cursor-pointer flex items-center gap-1.5 border-2 border-neutral-300 hover:border-black bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase transition-colors">
-                      <Upload className="h-3.5 w-3.5" />
-                      {motivationFile ? motivationFile.name.substring(0, 15) + '...' : 'Choose File'}
+                  <div className="flex flex-col gap-2">
+                    <label className="cursor-pointer flex items-center justify-center gap-1.5 border-2 border-neutral-300 hover:border-black bg-white px-3 py-3 font-mono text-[10px] font-bold uppercase transition-colors text-center">
+                      <Upload className="h-4 w-4 text-[#FA520F]" />
+                      {motivationFile ? motivationFile.name : 'Choose Motivation Letter PDF'}
                       <input
                         type="file"
                         accept="application/pdf"
@@ -696,15 +695,9 @@ export function PostDetail() {
                         disabled={isUploadingMotivation}
                       />
                     </label>
-                    {isUploadingMotivation && <span className="text-[9px] font-mono animate-pulse">Uploading...</span>}
+                    {isUploadingMotivation && <span className="text-[10px] font-mono animate-pulse text-neutral-600 text-center">Uploading Motivation Letter...</span>}
+                    {motivationLetterUrl && <span className="text-[10px] font-mono text-green-600 font-bold text-center">✓ Motivation Letter Uploaded Successfully</span>}
                   </div>
-                  <input
-                    type="url"
-                    placeholder="Or enter PDF URL directly"
-                    value={motivationLetterUrl}
-                    onChange={e => setMotivationLetterUrl(e.target.value)}
-                    className="w-full border-2 border-neutral-300 p-2 text-xs focus:border-black outline-none font-mono"
-                  />
                 </div>
               </div>
 

@@ -447,7 +447,7 @@ export function AdminPage() {
                 </div>
               )}
 
-              {/* Action Links (Resume, LinkedIn, Motivation letter, etc) */}
+              {/* Action Links (Resume, LinkedIn, Motivation/Cover letter, etc) */}
               <div className="flex flex-wrap gap-2.5">
                 {app.resume_url && (
                   <a
