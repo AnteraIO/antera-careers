@@ -5,7 +5,7 @@ import { Job, JobApplication } from '@/types'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { Plus, Pencil, Trash2, Save, X, Eye, EyeOff, ClipboardList, Briefcase, Mail, Phone, ExternalLink } from 'lucide-react'
+import { Plus, Pencil, Trash2, Save, X, Eye, EyeOff, ClipboardList, Mail, Phone, ExternalLink, Briefcase } from 'lucide-react'
 import { slugify } from '@/lib/utils'
 import { toast } from 'sonner'
 

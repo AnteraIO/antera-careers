@@ -4,6 +4,7 @@ import { TagFilter } from '@/components/common/TagFilter'
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Filter, X, MapPin, Briefcase } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
+import turingBg from '@/assets/karpathy.png'
 
 export function BlogPage() {
   const [page, setPage] = useState(1)
@@ -44,18 +45,30 @@ export function BlogPage() {
 
   return (
     <div className="bg-[#FAFAF8] text-black min-h-screen selection:bg-[#FA520F] selection:text-white">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-24 md:py-32">
-        {/* Header */}
-        <header className="mb-24 md:mb-40 text-center">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-normal tracking-[-0.03em] leading-[0.95] mb-6">
-            Join the Antera Team.
-          </h1>
-          <p className="text-base md:text-lg max-w-2xl leading-relaxed text-neutral-500 mx-auto">
-            {totalCount} active job openings. Help us innovate machine learning for low-resource languages.
-          </p>
-        </header>
+      {/* Hero Section with Background Image */}
+      <section 
+        className="relative border-b border-neutral-200 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${turingBg})`,
+        }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/60" />
+        
+        <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-12 py-24 md:py-32">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-normal tracking-[-0.03em] leading-[0.95] mb-6 text-white">
+              Join the Antera Team.
+            </h1>
+            <p className="text-base md:text-lg max-w-2xl leading-relaxed text-white/90 mx-auto">
+              {totalCount} active job openings. Always Towards Better and Greater things. We are looking for talented individuals to join our team and help us achieve our mission.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        {/* Filters */}
+      {/* Filters */}
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
         <div className="mb-12">
           {/* Mobile filter button */}
           <div className="sm:hidden">
