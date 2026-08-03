@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { Post } from '@/types'
+import { Job } from '@/types'
 import { useFilterStore } from '@/store/filterStore'
 
-export function usePosts(page: number = 1, pageSize: number = 6) {
-  const [posts, setPosts] = useState<Post[]>([])
+export function useJobs(page: number = 1, pageSize: number = 6) {
+  const [jobs, setJobs] = useState<Job[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { selectedTags, searchQuery } = useFilterStore()
 
-  const fetchPosts = async () => {
+  const fetchJobs = async () => {
     try {
       setLoading(true)
       const from = (page - 1) * pageSize
       const to = from + pageSize - 1
 
       let query = supabase
-        .from('posts')
+        .from('jobs')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(from, to)
@@ -27,13 +27,13 @@ export function usePosts(page: number = 1, pageSize: number = 6) {
       }
 
       if (searchQuery) {
-        query = query.ilike('title', `%${searchQuery}%`)
+        query = query.or(`title.ilike.%${searchQuery}%,department.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%`)
       }
 
       const { data, error: fetchError, count } = await query
 
       if (fetchError) throw fetchError
-      setPosts(data || [])
+      setJobs(data || [])
       setTotalCount(count || 0)
     } catch (err: any) {
       setError(err.message)
@@ -43,29 +43,29 @@ export function usePosts(page: number = 1, pageSize: number = 6) {
   }
 
   useEffect(() => {
-    fetchPosts()
+    fetchJobs()
   }, [selectedTags, searchQuery, page])
 
-  return { posts, totalCount, loading, error, refetch: fetchPosts }
+  return { jobs, totalCount, loading, error, refetch: fetchJobs }
 }
 
-export function usePost(slug: string) {
-  const [post, setPost] = useState<Post | null>(null)
+export function useJob(slug: string) {
+  const [job, setJob] = useState<Job | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const fetchJob = async () => {
       try {
         setLoading(true)
         const { data, error: fetchError } = await supabase
-          .from('posts')
+          .from('jobs')
           .select('*')
           .eq('slug', slug)
           .single()
 
         if (fetchError) throw fetchError
-        setPost(data)
+        setJob(data)
       } catch (err: any) {
         setError(err.message)
       } finally {
@@ -73,48 +73,24 @@ export function usePost(slug: string) {
       }
     }
 
-    if (slug) fetchPost()
+    if (slug) fetchJob()
   }, [slug])
 
   const incrementViews = async () => {
-    if (!post) return
-    const sessionKey = `viewed_${post.id}`
+    if (!job) return
+    const sessionKey = `viewed_job_${job.id}`
     if (sessionStorage.getItem(sessionKey)) return
 
     try {
-      const { error: updateError } = await supabase.rpc('increment_views', { post_id: post.id })
+      const { error: updateError } = await supabase.rpc('increment_job_views', { job_id: job.id })
       if (!updateError) {
         sessionStorage.setItem(sessionKey, 'true')
-        setPost(prev => prev ? { ...prev, views: prev.views + 1 } : null)
+        setJob(prev => prev ? { ...prev, views: prev.views + 1 } : null)
       }
     } catch (err) {
       console.error('Error incrementing views:', err)
     }
   }
 
-  const upvote = async () => {
-    if (!post) return
-    try {
-      const { error: updateError } = await supabase.rpc('upvote_post', { post_id: post.id })
-      if (!updateError) {
-        setPost(prev => prev ? { ...prev, upvotes: prev.upvotes + 1 } : null)
-      }
-    } catch (err) {
-      console.error('Error upvoting:', err)
-    }
-  }
-
-  const downvote = async () => {
-    if (!post) return
-    try {
-      const { error: updateError } = await supabase.rpc('downvote_post', { post_id: post.id })
-      if (!updateError) {
-        setPost(prev => prev ? { ...prev, downvotes: prev.downvotes + 1 } : null)
-      }
-    } catch (err) {
-      console.error('Error downvoting:', err)
-    }
-  }
-
-  return { post, loading, error, incrementViews, upvote, downvote }
+  return { job, loading, error, incrementViews }
 }

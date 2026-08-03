@@ -3,7 +3,6 @@ import { Layout } from '@/components/layout/Layout'
 import { HomePage } from '@/pages/HomePage'
 import { BlogPage } from '@/pages/BlogPage'
 import { PostPage } from '@/pages/PostPage'
-import { ResumePage } from '@/pages/ResumePage'
 import { AdminPage } from '@/pages/AdminPage'
 import { Toaster } from 'sonner'
 
@@ -19,9 +18,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="blog" element={<BlogPage />} />
-          <Route path="post/:slug" element={<PostPage />} />
-          <Route path="resume" element={<ResumePage />} />
+          <Route path="jobs" element={<BlogPage />} />
+          <Route path="job/:slug" element={<PostPage />} />
           <Route path="admin" element={<AdminPage />} />
           <Route path="*" element={<div className="text-center py-20 text-2xl">404 - Page Not Found</div>} />
         </Route>

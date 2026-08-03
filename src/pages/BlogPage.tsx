@@ -1,8 +1,8 @@
-import { usePosts } from '@/hooks/usePosts'
+import { useJobs } from '@/hooks/useJobs'
 import { SearchBar } from '@/components/common/SearchBar'
 import { TagFilter } from '@/components/common/TagFilter'
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Filter, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Filter, X, MapPin, Briefcase } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 
 export function BlogPage() {
@@ -11,21 +11,21 @@ export function BlogPage() {
   const [allTags, setAllTags] = useState<string[]>([])
   const [tagsLoading, setTagsLoading] = useState(true)
   const pageSize = 6
-  const { posts, totalCount, loading } = usePosts(page, pageSize)
+  const { jobs, totalCount, loading } = useJobs(page, pageSize)
 
   useEffect(() => {
     const fetchAllTags = async () => {
       try {
         const { data, error } = await supabase
-          .from('posts')
+          .from('jobs')
           .select('tags')
           .eq('published', true)
         
         if (!error && data) {
           const tagSet = new Set<string>()
-          data.forEach(post => {
-            if (post.tags && Array.isArray(post.tags)) {
-              post.tags.forEach((tag: string) => tagSet.add(tag))
+          data.forEach(job => {
+            if (job.tags && Array.isArray(job.tags)) {
+              job.tags.forEach((tag: string) => tagSet.add(tag))
             }
           })
           setAllTags(Array.from(tagSet).sort())
@@ -48,10 +48,10 @@ export function BlogPage() {
         {/* Header */}
         <header className="mb-24 md:mb-40 text-center">
           <h1 className="text-6xl md:text-8xl lg:text-9xl font-normal tracking-[-0.03em] leading-[0.95] mb-6">
-            Welcome to my blog.
+            Join the Antera Team.
           </h1>
           <p className="text-base md:text-lg max-w-2xl leading-relaxed text-neutral-500 mx-auto">
-            {totalCount} posts. Sharing thoughts and technical stuff.
+            {totalCount} active job openings. Help us innovate machine learning for low-resource languages.
           </p>
         </header>
 
@@ -87,46 +87,60 @@ export function BlogPage() {
           </div>
         </div>
 
-        {/* Posts Grid */}
+        {/* Jobs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border border-neutral-200 bg-white">
-          {posts.map((post, i) => (
+          {jobs.map((job, i) => (
             <div
-              key={post.id}
+              key={job.id}
               className={`group border-b ${i % 3 !== 2 ? 'lg:border-r' : ''} ${i < 3 ? 'md:border-b' : ''} border-neutral-200 hover:bg-neutral-50/50 transition-colors`}
             >
-              <a href={`/post/${post.slug}`} className="block p-8 md:p-12 min-h-[420px] flex flex-col justify-between">
-                {post.cover_image && (
-                  <div className="aspect-video relative border border-neutral-200 overflow-hidden mb-8 bg-neutral-100">
-                    <img 
-                      src={post.cover_image} 
-                      alt={post.title} 
-                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
-                    />
-                  </div>
-                )}
-                <div className="mt-auto">
+              <a href={`/job/${job.slug}`} className="block p-8 md:p-12 min-h-[420px] flex flex-col justify-between">
+                <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[10px] font-mono font-bold uppercase px-2 py-1 bg-black text-white">Read</span>
+                    <span className="text-[10px] font-mono font-bold uppercase px-2 py-1 bg-black text-white">
+                      {job.employment_type}
+                    </span>
                     <span className="text-[10px] font-mono text-neutral-700 uppercase">
-                      {new Date(post.created_at).toLocaleDateString()}
+                      {job.department}
                     </span>
                   </div>
                   <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-3 group-hover:text-[#FA520F] transition-colors">
-                    {post.title}
+                    {job.title}
                   </h2>
                   <p className="text-base text-neutral-500 leading-relaxed line-clamp-3">
-                    {post.excerpt?.replace(/^(?:TITLE|EXCERPT|CONTENT):\s*/gi, '').trim() ||
-                     post.content?.replace(/<[^>]*>/g, '').substring(0, 160)}
+                    {job.description}
                   </p>
+                </div>
+
+                <div className="mt-8 pt-4 border-t border-neutral-200 space-y-2">
+                  <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-neutral-700">
+                    <MapPin className="h-3.5 w-3.5 text-[#FA520F]" />
+                    <span>{job.location}</span>
+                  </div>
+                  {job.experience_level && (
+                    <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-neutral-700">
+                      <Briefcase className="h-3.5 w-3.5 text-[#FA520F]" />
+                      <span>{job.experience_level}</span>
+                    </div>
+                  )}
+                  {job.tags && job.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {job.tags.slice(0, 3).map(tag => (
+                        <span key={tag} className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 border border-neutral-300 text-neutral-600 bg-neutral-100">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </a>
             </div>
           ))}
         </div>
 
-        {posts.length === 0 && !loading && (
+        {jobs.length === 0 && !loading && (
           <div className="text-center py-20 border border-dashed border-neutral-200">
-            <p className="font-mono text-neutral-700">No articles found.</p>
+            <p className="font-mono text-neutral-700">No career opportunities found.</p>
           </div>
         )}
 
@@ -134,7 +148,7 @@ export function BlogPage() {
         {totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-12 pt-8 border-t border-neutral-200">
             <div className="text-[10px] font-mono uppercase text-neutral-700">
-              {totalCount} total posts
+              {totalCount} total openings
             </div>
             
             <div className="flex items-center gap-2">

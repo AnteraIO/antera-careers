@@ -1,50 +1,40 @@
-import { usePost } from '@/hooks/usePosts'
-import { MarkdownRenderer } from './MarkdownRenderer'
-import { Calendar, Clock, Eye, ArrowBigUp, ArrowBigDown, ArrowLeft, Share2, ChevronUp, Twitter, Linkedin, MessageCircle } from 'lucide-react'
+import { useJob } from '@/hooks/useJobs'
+import { Briefcase, Eye, ArrowLeft, Share2, ChevronUp, Twitter, Linkedin, MessageCircle, DollarSign, MapPin, Download } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
-import { formatDate, estimateReadingTime, cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabaseClient'
+import { toast } from 'sonner'
 
 export function PostDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const { post, loading, error, incrementViews, upvote, downvote } = usePost(slug || '')
+  const { job, loading, error, incrementViews } = useJob(slug || '')
   const [showScrollTop, setShowScrollTop] = useState(false)
-  const [hasVoted, setHasVoted] = useState(false)
+
+  // Application Form State
+  const [showApplyModal, setShowApplyModal] = useState(false)
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
+  const [portfolioUrl, setPortfolioUrl] = useState('')
+  const [coverLetter, setCoverLetter] = useState('')
+  const [resumeUrl, setResumeUrl] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (post) {
-      setHasVoted(!!localStorage.getItem(`voted_${post.id}`))
-    }
-  }, [post?.id])
-
-  useEffect(() => {
-    if (post) {
+    if (job) {
       incrementViews()
-      document.title = `${post.title} | Sheddy.dev`
+      document.title = `${job.title} | Antera Careers`
       const metaDescription = document.querySelector('meta[name="description"]')
       if (metaDescription) {
-        metaDescription.setAttribute('content', post.excerpt || '')
+        metaDescription.setAttribute('content', job.description || '')
       }
-
-      const setOgTag = (property: string, content: string) => {
-        let el = document.querySelector(`meta[property="${property}"]`)
-        if (!el) {
-          el = document.createElement('meta')
-          el.setAttribute('property', property)
-          document.head.appendChild(el)
-        }
-        el.setAttribute('content', content)
-      }
-
-      setOgTag('og:title', post.title)
-      setOgTag('og:description', post.excerpt || '')
-      if (post.cover_image) setOgTag('og:image', post.cover_image)
     }
 
     return () => {
-      document.title = 'Sheddy.dev | Personal Portfolio'
+      document.title = 'Antera Careers | Join our Team'
     }
-  }, [post?.id])
+  }, [job?.id])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,7 +46,7 @@ export function PostDetail() {
 
   const share = (platform: string) => {
     const url = window.location.href
-    const title = post?.title || ''
+    const title = `We are hiring for ${job?.title} at Antera! Join us: `
     let shareUrl = ''
 
     if (platform === 'twitter') {
@@ -68,8 +58,250 @@ export function PostDetail() {
     if (platform === 'whatsapp') {
       shareUrl = `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`
     }
+    if (platform === 'facebook') {
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+    }
 
     if (shareUrl) window.open(shareUrl, '_blank')
+  }
+
+  // Draw and download high quality poster on HTML5 canvas
+  const downloadPoster = () => {
+    if (!job) return
+
+    const canvas = document.createElement('canvas')
+    canvas.width = 1200
+    canvas.height = 1200
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // Draw background with cool gradient
+    const gradient = ctx.createLinearGradient(0, 0, 1200, 1200)
+    gradient.addColorStop(0, '#FAFAF8')
+    gradient.addColorStop(0.5, '#FFFFFF')
+    gradient.addColorStop(1, '#F3F3EE')
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, 1200, 1200)
+
+    // Draw border
+    ctx.strokeStyle = '#000000'
+    ctx.lineWidth = 16
+    ctx.strokeRect(40, 40, 1120, 1120)
+
+    // Draw secondary inner border for design
+    ctx.strokeStyle = '#FA520F'
+    ctx.lineWidth = 4
+    ctx.strokeRect(56, 56, 1088, 1088)
+
+    // Load Antera Logo image
+    const img = new Image()
+    img.src = '/antera-logo.jpeg'
+    img.onload = () => {
+      // Draw Logo
+      ctx.drawImage(img, 100, 100, 80, 80)
+
+      // Draw Title and Header info
+      ctx.fillStyle = '#000000'
+      ctx.font = 'bold 32px monospace'
+      ctx.fillText('ANTERA CAREERS', 200, 150)
+
+      ctx.fillStyle = '#FA520F'
+      ctx.font = 'bold 24px monospace'
+      ctx.fillText('WE ARE HIRING!', 200, 185)
+
+      // Divider
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(100, 220, 1000, 8)
+
+      // Job Title
+      ctx.fillStyle = '#000000'
+      ctx.font = 'bold 56px Arial, Helvetica, sans-serif'
+
+      // Handle multi-line job title if too long
+      const words = job.title.split(' ')
+      let line = ''
+      let y = 320
+      const maxWidth = 1000
+      const lineHeight = 70
+
+      for (let n = 0; n < words.length; n++) {
+        let testLine = line + words[n] + ' '
+        let metrics = ctx.measureText(testLine)
+        let testWidth = metrics.width
+        if (testWidth > maxWidth && n > 0) {
+          ctx.fillText(line, 100, y)
+          line = words[n] + ' '
+          y += lineHeight
+        } else {
+          line = testLine
+        }
+      }
+      ctx.fillText(line, 100, y)
+
+      // Meta attributes (Location, Dept, Employment Type)
+      y += 50
+      ctx.fillStyle = '#FFFFFF'
+      ctx.fillRect(100, y, 1000, 120)
+      ctx.lineWidth = 6
+      ctx.strokeStyle = '#000000'
+      ctx.strokeRect(100, y, 1000, 120)
+
+      ctx.fillStyle = '#000000'
+      ctx.font = 'bold 20px monospace'
+      ctx.fillText(`DEPARTMENT: ${job.department.toUpperCase()}`, 130, y + 45)
+      ctx.fillText(`LOCATION: ${job.location.toUpperCase()}`, 130, y + 85)
+      ctx.fillText(`TYPE: ${job.employment_type.toUpperCase()}`, 650, y + 45)
+      if (job.experience_level) {
+        ctx.fillText(`LEVEL: ${job.experience_level.toUpperCase()}`, 650, y + 85)
+      }
+
+      // Requirements
+      y += 180
+      ctx.fillStyle = '#FA520F'
+      ctx.font = 'bold 28px monospace'
+      ctx.fillText('KEY REQUIREMENTS & SKILLS', 100, y)
+
+      y += 40
+      ctx.fillStyle = '#000000'
+      ctx.font = '24px Arial, sans-serif'
+
+      const requirements = job.requirements && job.requirements.length > 0
+        ? job.requirements.slice(0, 4)
+        : ['Strong programming skills', 'Effective communication & teamwork', 'Problem solving capabilities'];
+
+      requirements.forEach((req, idx) => {
+        // Wrap requirements lines if needed
+        const reqText = `• ${req}`
+        const testY = y + (idx * 55)
+
+        ctx.fillText(reqText.length > 80 ? reqText.substring(0, 77) + '...' : reqText, 100, testY)
+      })
+
+      // Divider before Footer
+      ctx.fillStyle = '#CCCCCC'
+      ctx.fillRect(100, 1020, 1000, 2)
+
+      // Call to action
+      ctx.fillStyle = '#FA520F'
+      ctx.font = 'bold 26px monospace'
+      ctx.fillText('APPLY NOW AT: ANTERA.CO.TZ/CAREERS', 100, 1080)
+
+      ctx.fillStyle = '#555555'
+      ctx.font = '20px monospace'
+      ctx.fillText('Scan or visit to learn more & apply', 100, 1115)
+
+      // Save canvas as image download
+      const dataUrl = canvas.toDataURL('image/png')
+      const link = document.createElement('a')
+      link.download = `Antera_Hiring_${job.slug}.png`
+      link.href = dataUrl
+      link.click()
+    }
+
+    img.onerror = () => {
+      // Fallback if logo fails to load (draw placeholder instead)
+      ctx.fillStyle = '#FA520F'
+      ctx.fillRect(100, 100, 80, 80)
+      ctx.fillStyle = '#FFFFFF'
+      ctx.font = 'bold 40px Arial'
+      ctx.fillText('A', 125, 155)
+
+      // Trigger the load event logic directly as fallback
+      ctx.fillStyle = '#000000'
+      ctx.font = 'bold 32px monospace'
+      ctx.fillText('ANTERA CAREERS', 200, 150)
+
+      ctx.fillStyle = '#FA520F'
+      ctx.font = 'bold 24px monospace'
+      ctx.fillText('WE ARE HIRING!', 200, 185)
+
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(100, 220, 1000, 8)
+
+      ctx.fillStyle = '#000000'
+      ctx.font = 'bold 56px Arial, Helvetica, sans-serif'
+      ctx.fillText(job.title, 100, 320)
+
+      // Meta attributes box
+      ctx.fillStyle = '#FFFFFF'
+      ctx.fillRect(100, 400, 1000, 120)
+      ctx.lineWidth = 6
+      ctx.strokeStyle = '#000000'
+      ctx.strokeRect(100, 400, 1000, 120)
+
+      ctx.fillStyle = '#000000'
+      ctx.font = 'bold 20px monospace'
+      ctx.fillText(`DEPARTMENT: ${job.department.toUpperCase()}`, 130, 445)
+      ctx.fillText(`LOCATION: ${job.location.toUpperCase()}`, 130, 485)
+      ctx.fillText(`TYPE: ${job.employment_type.toUpperCase()}`, 650, 445)
+      if (job.experience_level) {
+        ctx.fillText(`LEVEL: ${job.experience_level.toUpperCase()}`, 650, 485)
+      }
+
+      // Requirements list
+      ctx.fillStyle = '#FA520F'
+      ctx.font = 'bold 28px monospace'
+      ctx.fillText('KEY REQUIREMENTS & SKILLS', 100, 600)
+
+      ctx.fillStyle = '#000000'
+      ctx.font = '24px Arial, sans-serif'
+      const requirements = job.requirements && job.requirements.length > 0 ? job.requirements.slice(0, 4) : ['General qualifications'];
+      requirements.forEach((req, idx) => {
+        ctx.fillText(`• ${req}`, 100, 660 + (idx * 55))
+      })
+
+      ctx.fillStyle = '#CCCCCC'
+      ctx.fillRect(100, 1020, 1000, 2)
+
+      ctx.fillStyle = '#FA520F'
+      ctx.font = 'bold 26px monospace'
+      ctx.fillText('APPLY NOW AT: ANTERA.CO.TZ/CAREERS', 100, 1080)
+
+      const dataUrl = canvas.toDataURL('image/png')
+      const link = document.createElement('a')
+      link.download = `Antera_Hiring_${job.slug}.png`
+      link.href = dataUrl
+      link.click()
+    }
+  }
+
+  const handleApply = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!job) return
+
+    try {
+      setSubmitting(true)
+      const { error: applyErr } = await supabase
+        .from('job_applications')
+        .insert([{
+          job_id: job.id,
+          full_name: fullName,
+          email,
+          phone,
+          linkedin_url: linkedinUrl,
+          portfolio_url: portfolioUrl,
+          cover_letter: coverLetter,
+          resume_url: resumeUrl || 'https://example.com/uploaded_resume.pdf',
+          status: 'Pending'
+        }])
+
+      if (applyErr) throw applyErr
+
+      toast.success('Application submitted successfully! Our recruiters will reach out to you soon.')
+      setShowApplyModal(false)
+      // Reset form
+      setFullName('')
+      setEmail('')
+      setPhone('')
+      setLinkedinUrl('')
+      setPortfolioUrl('')
+      setCoverLetter('')
+      setResumeUrl('')
+    } catch (err: any) {
+      toast.error('Failed to submit application: ' + err.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (loading) {
@@ -92,144 +324,147 @@ export function PostDetail() {
     )
   }
 
-  if (error || !post) {
+  if (error || !job) {
     return (
       <div className="bg-[#FAFAF8] text-black min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="font-mono text-neutral-700">Post not found</p>
-          <Link to="/blog" className="text-[#FA520F] font-mono text-sm mt-4 inline-block hover:underline">
-            ← back to blog
+          <p className="font-mono text-neutral-700">Job vacancy not found</p>
+          <Link to="/jobs" className="text-[#FA520F] font-mono text-sm mt-4 inline-block hover:underline">
+            ← back to jobs
           </Link>
         </div>
       </div>
     )
   }
 
-  const voteCount = (post.upvotes || 0) - (post.downvotes || 0)
-
   return (
     <article className="bg-[#FAFAF8] text-black min-h-screen selection:bg-[#FA520F] selection:text-white">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-24 md:py-32">
         <div className="max-w-4xl mx-auto">
           {/* Back button */}
-          <Link to="/blog" className="group inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-700 hover:text-black transition-colors mb-12">
+          <Link to="/jobs" className="group inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-700 hover:text-black transition-colors mb-12">
             <ArrowLeft className="h-4 w-4" />
-            back
+            back to jobs
           </Link>
 
-          {/* Post header */}
+          {/* Header */}
           <header className="mb-16">
-            {/* Tags */}
+            {/* Department & Employment Type */}
             <div className="flex flex-wrap gap-2 mb-6">
-              {post.tags.map(tag => (
-                <span key={tag} className="text-[9px] font-mono font-bold uppercase px-2 py-1 bg-black text-white border border-black">
-                  #{tag}
-                </span>
-              ))}
+              <span className="text-[9px] font-mono font-bold uppercase px-2 py-1 bg-black text-white border border-black">
+                {job.department}
+              </span>
+              <span className="text-[9px] font-mono font-bold uppercase px-2 py-1 bg-[#FA520F] text-white border border-[#FA520F]">
+                {job.employment_type}
+              </span>
             </div>
 
             {/* Title */}
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-normal tracking-[-0.03em] leading-[0.95] text-black mb-6">
-              {post.title}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-normal tracking-[-0.03em] leading-[0.95] text-black mb-8">
+              {job.title}
             </h1>
 
-            {/* Meta info */}
-            <div className="flex flex-wrap items-center gap-6 text-[10px] font-mono font-bold uppercase text-neutral-700 border-t border-neutral-200 pt-6">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5" />
-                {formatDate(post.created_at)}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                {estimateReadingTime(post.content)}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Eye className="h-3.5 w-3.5" />
-                {post.views} views
-              </span>
+            {/* Key info panel */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-y border-neutral-300 py-6 text-[10px] font-mono font-bold uppercase text-neutral-700">
+              <div className="space-y-1">
+                <span className="text-neutral-400 block font-normal">Location</span>
+                <span className="flex items-center gap-1 text-black">
+                  <MapPin className="h-3.5 w-3.5 text-[#FA520F]" />
+                  {job.location}
+                </span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-neutral-400 block font-normal">Experience Level</span>
+                <span className="flex items-center gap-1 text-black">
+                  <Briefcase className="h-3.5 w-3.5 text-[#FA520F]" />
+                  {job.experience_level || 'Not Specified'}
+                </span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-neutral-400 block font-normal">Salary Range</span>
+                <span className="flex items-center gap-1 text-black">
+                  <DollarSign className="h-3.5 w-3.5 text-[#FA520F]" />
+                  {job.salary_range || 'Competitive'}
+                </span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-neutral-400 block font-normal">Total Views</span>
+                <span className="flex items-center gap-1 text-black">
+                  <Eye className="h-3.5 w-3.5 text-[#FA520F]" />
+                  {job.views} Views
+                </span>
+              </div>
             </div>
           </header>
 
-          {/* Cover image */}
-          {post.cover_image && (
-            <div className="border border-neutral-200 overflow-hidden mb-16">
-              <img 
-                src={post.cover_image} 
-                alt={post.title} 
-                className="w-full object-cover max-h-[500px]" 
-                loading="lazy" 
-              />
-            </div>
-          )}
+          {/* Description Section */}
+          <div className="prose prose-neutral max-w-none mb-16">
+            <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Role Description</h2>
+            <p className="text-[18px] leading-relaxed text-neutral-700 whitespace-pre-line mb-8">
+              {job.description}
+            </p>
 
-          {/* Markdown content */}
-          <div className="prose prose-neutral max-w-none mb-16 text-neutral-800
-            prose-headings:text-black prose-headings:font-bold prose-headings:tracking-tight
-            prose-h2:text-[32px] prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-none
-            prose-h3:text-[24px] prose-h3:mt-12 prose-h3:mb-4
-            prose-p:text-[19px] prose-p:leading-[32px] prose-p:text-neutral-800 prose-p:mb-8
-            prose-pre:bg-black prose-pre:text-white prose-pre:rounded-none prose-pre:border prose-pre:border-neutral-500 prose-pre:p-6
-            prose-blockquote:border-l-4 prose-blockquote:border-neutral-500 prose-blockquote:font-normal prose-blockquote:italic prose-blockquote:bg-transparent prose-blockquote:pl-6 prose-blockquote:py-2 prose-blockquote:my-10 prose-blockquote:text-neutral-600
-            prose-ul:list-disc prose-ul:pl-6 prose-ul:mb-8
-            prose-ol:list-decimal prose-ol:pl-6 prose-ol:mb-8
-            prose-li:text-[19px] prose-li:leading-[32px]
-            prose-table:border-none prose-table:my-12
-            prose-th:border-b prose-th:border-neutral-600 prose-th:p-3 prose-th:text-sm prose-th:font-bold
-            prose-td:p-3 prose-td:border-b prose-td:border-neutral-200 prose-td:text-[17px]
-            prose-a:text-black prose-a:font-normal prose-a:underline prose-a:decoration-neutral-700 hover:prose-a:decoration-black
-            prose-strong:font-bold prose-strong:text-black
-            prose-img:border-none prose-img:shadow-none prose-img:my-12
-          ">
-            <MarkdownRenderer content={post.content} />
+            {/* Requirements Bullet points */}
+            {job.requirements && job.requirements.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Key Requirements & Skills</h2>
+                <ul className="list-disc pl-6 space-y-2 text-[17px] text-neutral-700">
+                  {job.requirements.map((req, index) => (
+                    <li key={index}>{req}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Qualifications Bullet points */}
+            {job.qualifications && job.qualifications.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Preferred Qualifications</h2>
+                <ul className="list-disc pl-6 space-y-2 text-[17px] text-neutral-700">
+                  {job.qualifications.map((qual, index) => (
+                    <li key={index}>{qual}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Benefits Bullet points */}
+            {job.benefits && job.benefits.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">What We Offer (Benefits)</h2>
+                <ul className="list-disc pl-6 space-y-2 text-[17px] text-neutral-700">
+                  {job.benefits.map((benefit, index) => (
+                    <li key={index}>{benefit}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
-          {/* Footer with voting and sharing */}
-          <footer className="border-t border-neutral-500 pt-8 mt-8">
+          {/* Application Call-To-Action */}
+          <div className="border-4 border-black bg-white p-8 mb-16 shadow-[6px_6px_0px_0px_#000000] relative">
+            <div className="absolute inset-0 border-t-2 border-l-2 border-[#FA520F]/20 pointer-events-none" />
+            <h3 className="text-3xl font-bold tracking-tight mb-2">Interested in this vacancy?</h3>
+            <p className="text-neutral-600 mb-6 font-mono text-sm">Join Antera and help us pioneer native Swahili language models!</p>
+            <button
+              onClick={() => setShowApplyModal(true)}
+              className="relative border-4 border-black bg-[#FA520F] px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+            >
+              Apply for this position
+            </button>
+          </div>
+
+          {/* Share/Download Poster Footer */}
+          <footer className="border-t border-neutral-300 pt-8 mt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
-              {/* Vote buttons */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center border-4 border-black">
-                  <button
-                    className={cn(
-                      "p-2 transition-all",
-                      hasVoted 
-                        ? "opacity-40 cursor-not-allowed" 
-                        : "hover:bg-black hover:text-white"
-                    )}
-                    onClick={() => {
-                      if (!hasVoted) {
-                        upvote()
-                        localStorage.setItem(`voted_${post.id}`, 'up')
-                        setHasVoted(true)
-                      }
-                    }}
-                    disabled={hasVoted}
-                  >
-                    <ArrowBigUp className="h-5 w-5" />
-                  </button>
-                  <span className="px-3 text-sm font-mono font-bold text-black min-w-[32px] text-center">
-                    {voteCount}
-                  </span>
-                  <button
-                    className={cn(
-                      "p-2 transition-all",
-                      hasVoted 
-                        ? "opacity-40 cursor-not-allowed" 
-                        : "hover:bg-black hover:text-white"
-                    )}
-                    onClick={() => {
-                      if (!hasVoted) {
-                        downvote()
-                        localStorage.setItem(`voted_${post.id}`, 'down')
-                        setHasVoted(true)
-                      }
-                    }}
-                    disabled={hasVoted}
-                  >
-                    <ArrowBigDown className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
+              {/* Poster Creation Download option */}
+              <button
+                onClick={downloadPoster}
+                className="relative border-4 border-black bg-[#FA520F] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#000000] transition-all duration-75 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none flex items-center gap-1.5"
+              >
+                <Download className="h-3.5 w-3.5" />
+                Download Beautiful Poster
+              </button>
 
               {/* Share buttons */}
               <div className="flex items-center gap-2">
@@ -243,7 +478,7 @@ export function PostDetail() {
                 >
                   <span className="flex items-center gap-1.5">
                     <Twitter className="h-3 w-3" />
-                    tweet
+                    X
                   </span>
                 </button>
                 <button 
@@ -264,11 +499,133 @@ export function PostDetail() {
                     whatsapp
                   </span>
                 </button>
+                <button
+                  onClick={() => share('facebook')}
+                  className="relative border-4 border-black bg-transparent px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black shadow-[3px_3px_0px_0px_#000000] transition-all duration-75 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none hover:bg-black hover:text-white"
+                >
+                  <span className="flex items-center gap-1.5">
+                    Facebook
+                  </span>
+                </button>
               </div>
             </div>
           </footer>
         </div>
       </div>
+
+      {/* Application Modal */}
+      {showApplyModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-[#FAFAF8] border-4 border-black p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[8px_8px_0px_0px_#000000]">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-neutral-300">
+              <h3 className="text-2xl font-bold tracking-tight">Apply for {job.title}</h3>
+              <button
+                onClick={() => setShowApplyModal(false)}
+                className="p-1 border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black transition-all font-mono"
+              >
+                CLOSE
+              </button>
+            </div>
+
+            <form onSubmit={handleApply} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Full Name *</label>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={e => setFullName(e.target.value)}
+                    required
+                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Email Address *</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Phone Number</label>
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Resume Link / URL *</label>
+                  <input
+                    type="url"
+                    placeholder="Link to PDF, Google Drive, or OneDrive"
+                    value={resumeUrl}
+                    onChange={e => setResumeUrl(e.target.value)}
+                    required
+                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">LinkedIn Profile URL</label>
+                  <input
+                    type="url"
+                    value={linkedinUrl}
+                    onChange={e => setLinkedinUrl(e.target.value)}
+                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Portfolio URL / Website</label>
+                  <input
+                    type="url"
+                    value={portfolioUrl}
+                    onChange={e => setPortfolioUrl(e.target.value)}
+                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Cover Letter / Pitch</label>
+                <textarea
+                  value={coverLetter}
+                  onChange={e => setCoverLetter(e.target.value)}
+                  rows={4}
+                  className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                  placeholder="Tell us why you are a great fit for this job!"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-neutral-200 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowApplyModal(false)}
+                  className="border-2 border-black bg-transparent px-5 py-2 font-mono text-xs font-bold uppercase"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="border-2 border-black bg-[#FA520F] text-white px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider"
+                >
+                  {submitting ? 'Submitting...' : 'Submit Application'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Scroll to top button */}
       {showScrollTop && (

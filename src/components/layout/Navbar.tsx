@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Menu, LogOut, BookOpen, User as UserIcon, LayoutDashboard, Home, X } from 'lucide-react'
+import { Menu, LogOut, Briefcase, LayoutDashboard, Home, X } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useState, useEffect } from 'react'
 
@@ -34,7 +34,7 @@ export function Navbar() {
         <span>home</span>
       </Link>
       <Link 
-        to="/blog" 
+        to="/jobs"
         onClick={onClick}
         className={`flex items-center gap-2 font-mono font-bold uppercase tracking-wider transition-colors ${
           isMobile 
@@ -42,20 +42,8 @@ export function Navbar() {
             : 'text-[10px] text-neutral-700 hover:text-black'
         }`}
       >
-        <BookOpen className="h-3.5 w-3.5" />
-        <span>blog</span>
-      </Link>
-      <Link 
-        to="/resume" 
-        onClick={onClick}
-        className={`flex items-center gap-2 font-mono font-bold uppercase tracking-wider transition-colors ${
-          isMobile 
-            ? 'text-neutral-700 hover:text-black py-3 px-4 border-b border-neutral-200' 
-            : 'text-[10px] text-neutral-700 hover:text-black'
-        }`}
-      >
-        <UserIcon className="h-3.5 w-3.5" />
-        <span>resume</span>
+        <Briefcase className="h-3.5 w-3.5" />
+        <span>jobs</span>
       </Link>
       {isAdmin && (
         <Link 
@@ -81,17 +69,19 @@ export function Navbar() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="h-8 w-8 border-2 border-black flex items-center justify-center overflow-hidden">
+              <div className="h-8 w-8 border-2 border-black flex items-center justify-center overflow-hidden bg-white">
                 <img 
                   src="/antera-logo.jpeg" 
                   alt="Antera logo" 
                   className="h-6 w-6 object-contain"
                   onError={(e) => {
-                    console.error('Logo failed to load:', e)
                     e.currentTarget.style.display = 'none'
                   }}
                 />
               </div>
+              <span className="font-mono text-sm font-bold uppercase tracking-wider text-black">
+                Antera Careers
+              </span>
             </Link>
 
             {/* Desktop Navigation */}

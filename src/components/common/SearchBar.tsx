@@ -31,7 +31,7 @@ export function SearchBar() {
         {/* Search input */}
         <input
           type="text"
-          placeholder="search posts..."
+          placeholder="search jobs, departments, locations..."
           value={localQuery}
           onChange={(e) => setLocalQuery(e.target.value)}
           className="w-full pl-10 pr-10 py-3 bg-transparent text-black placeholder:text-neutral-700 font-mono text-sm focus:outline-none"
