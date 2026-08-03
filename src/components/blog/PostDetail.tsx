@@ -74,63 +74,82 @@ export function PostDetail() {
     if (shareUrl) window.open(shareUrl, '_blank')
   }
 
-  // Draw and download high quality poster on HTML5 canvas
   const downloadPoster = () => {
     if (!job) return
 
     const canvas = document.createElement('canvas')
-    canvas.width = 1200
-    canvas.height = 1200
+    canvas.width = 800
+    canvas.height = 1000
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // Draw background with cool gradient
-    const gradient = ctx.createLinearGradient(0, 0, 1200, 1200)
-    gradient.addColorStop(0, '#FAFAF8')
-    gradient.addColorStop(0.5, '#FFFFFF')
-    gradient.addColorStop(1, '#F3F3EE')
-    ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, 1200, 1200)
+    // White background
+    ctx.fillStyle = '#FFFFFF'
+    ctx.fillRect(0, 0, 800, 1000)
 
-    // Draw border
-    ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 16
-    ctx.strokeRect(40, 40, 1120, 1120)
+    // Orange border
+    ctx.strokeStyle = '#f97316'
+    ctx.lineWidth = 20
+    ctx.strokeRect(10, 10, 780, 980)
 
-    // Draw secondary inner border for design
-    ctx.strokeStyle = '#FA520F'
-    ctx.lineWidth = 4
-    ctx.strokeRect(56, 56, 1088, 1088)
+    // Decorative circles
+    ctx.fillStyle = '#f97316'
+    ctx.globalAlpha = 0.3
+    ctx.beginPath()
+    ctx.arc(700, 880, 80, 0, Math.PI * 2)
+    ctx.fill()
+    
+    ctx.globalAlpha = 0.2
+    ctx.beginPath()
+    ctx.arc(80, 160, 40, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.globalAlpha = 1
 
-    // Load Antera Logo image
     const img = new Image()
     img.src = '/antera-logo.jpeg'
     img.onload = () => {
-      // Draw Logo
-      ctx.drawImage(img, 100, 100, 80, 80)
+      drawPoster(ctx, img)
+    }
+    img.onerror = () => {
+      drawPoster(ctx, null)
+    }
 
-      // Draw Title and Header info
-      ctx.fillStyle = '#000000'
-      ctx.font = 'bold 32px monospace'
-      ctx.fillText('ANTERA CAREERS', 200, 150)
+    function drawPoster(ctx: CanvasRenderingContext2D, logoImg: HTMLImageElement | null) {
+      // Top Branding Section
+      if (logoImg) {
+        ctx.drawImage(logoImg, 40, 40, 55, 55)
+      }
 
-      ctx.fillStyle = '#FA520F'
-      ctx.font = 'bold 24px monospace'
-      ctx.fillText('WE ARE HIRING!', 200, 185)
+      ctx.fillStyle = '#0f172a'
+      ctx.font = 'bold 20px Inter, system-ui, sans-serif'
+      ctx.textBaseline = 'top'
+      ctx.fillText('ANTERA', 110, 45)
 
-      // Divider
-      ctx.fillStyle = '#000000'
-      ctx.fillRect(100, 220, 1000, 8)
+      ctx.textAlign = 'right'
+      ctx.fillStyle = '#94a3b8'
+      ctx.font = 'bold 13px Inter, system-ui, sans-serif'
+      ctx.fillText('HIRING NOW', 760, 45)
+      ctx.textAlign = 'left'
+
+      // Hero Title Section
+      ctx.fillStyle = '#64748b'
+      ctx.font = '22px Inter, system-ui, sans-serif'
+      ctx.fillText('is looking for a', 40, 120)
+
+      ctx.fillStyle = '#f97316'
+      ctx.font = '22px Inter, system-ui, sans-serif'
+      const jobTypeText = job.employment_type || 'Full Time'
+      ctx.fillText(jobTypeText, 40 + ctx.measureText('is looking for a ').width, 120)
 
       // Job Title
-      ctx.fillStyle = '#000000'
-      ctx.font = 'bold 56px Arial, Helvetica, sans-serif'
+      ctx.fillStyle = '#0f172a'
+      ctx.font = 'bold 56px Inter, system-ui, sans-serif'
+      ctx.textBaseline = 'top'
 
-      // Handle multi-line job title if too long
       const words = job.title.split(' ')
       let line = ''
-      let y = 320
-      const maxWidth = 1000
+      let y = 170
+      const maxWidth = 700
       const lineHeight = 70
 
       for (let n = 0; n < words.length; n++) {
@@ -138,133 +157,132 @@ export function PostDetail() {
         let metrics = ctx.measureText(testLine)
         let testWidth = metrics.width
         if (testWidth > maxWidth && n > 0) {
-          ctx.fillText(line, 100, y)
+          ctx.fillText(line, 40, y)
           line = words[n] + ' '
           y += lineHeight
         } else {
           line = testLine
         }
       }
-      ctx.fillText(line, 100, y)
+      ctx.fillText(line, 40, y)
 
-      // Meta attributes (Location, Dept, Employment Type)
-      y += 50
-      ctx.fillStyle = '#FFFFFF'
-      ctx.fillRect(100, y, 1000, 120)
-      ctx.lineWidth = 6
-      ctx.strokeStyle = '#000000'
-      ctx.strokeRect(100, y, 1000, 120)
+      const titleY = y + 10
 
-      ctx.fillStyle = '#000000'
-      ctx.font = 'bold 20px monospace'
-      ctx.fillText(`DEPARTMENT: ${job.department.toUpperCase()}`, 130, y + 45)
-      ctx.fillText(`LOCATION: ${job.location.toUpperCase()}`, 130, y + 85)
-      ctx.fillText(`TYPE: ${job.employment_type.toUpperCase()}`, 650, y + 45)
-      if (job.experience_level) {
-        ctx.fillText(`LEVEL: ${job.experience_level.toUpperCase()}`, 650, y + 85)
-      }
-
-      // Requirements
-      y += 180
-      ctx.fillStyle = '#FA520F'
-      ctx.font = 'bold 28px monospace'
-      ctx.fillText('KEY REQUIREMENTS & SKILLS', 100, y)
-
-      y += 40
-      ctx.fillStyle = '#000000'
-      ctx.font = '24px Arial, sans-serif'
+      // Requirements Section
+      const reqStartY = titleY + 70
+      ctx.fillStyle = '#94a3b8'
+      ctx.font = 'bold 12px Inter, system-ui, sans-serif'
+      ctx.textBaseline = 'top'
+      ctx.fillText('KEY REQUIREMENTS', 40, reqStartY)
 
       const requirements = job.requirements && job.requirements.length > 0
-        ? job.requirements.slice(0, 4)
-        : ['Strong programming skills', 'Effective communication & teamwork', 'Problem solving capabilities'];
+        ? job.requirements.slice(0, 6)
+        : ['Strong programming skills', 'Effective communication', 'Problem solving capabilities']
 
-      requirements.forEach((req, idx) => {
-        // Wrap requirements lines if needed
-        const reqText = `• ${req}`
-        const testY = y + (idx * 55)
+      let reqY = reqStartY + 35
+      ctx.fillStyle = '#475569'
+      ctx.font = '15px Inter, system-ui, sans-serif'
 
-        ctx.fillText(reqText.length > 80 ? reqText.substring(0, 77) + '...' : reqText, 100, testY)
+      requirements.forEach((req: string, idx: number) => {
+        const reqText = `✓ ${req}`
+        const maxReqWidth = 700
+        
+        if (ctx.measureText(reqText).width > maxReqWidth) {
+          const truncated = reqText.substring(0, 55) + '...'
+          ctx.fillText(truncated, 40, reqY + (idx * 28))
+        } else {
+          ctx.fillText(reqText, 40, reqY + (idx * 28))
+        }
       })
 
-      // Divider before Footer
-      ctx.fillStyle = '#CCCCCC'
-      ctx.fillRect(100, 1020, 1000, 2)
+      // Qualifications Section
+      const qualStartY = reqY + (requirements.length * 28) + 20
+      const qualifications = job.qualifications && job.qualifications.length > 0
+        ? job.qualifications.slice(0, 4)
+        : []
 
-      // Call to action
-      ctx.fillStyle = '#FA520F'
-      ctx.font = 'bold 26px monospace'
-      ctx.fillText('APPLY NOW AT: ANTERA.CO.TZ/CAREERS', 100, 1080)
+      if (qualifications.length > 0) {
+        ctx.fillStyle = '#94a3b8'
+        ctx.font = 'bold 12px Inter, system-ui, sans-serif'
+        ctx.textBaseline = 'top'
+        ctx.fillText('PREFERRED QUALIFICATIONS', 40, qualStartY)
 
-      ctx.fillStyle = '#555555'
-      ctx.font = '20px monospace'
-      ctx.fillText('Scan or visit to learn more & apply', 100, 1115)
+        let qualY = qualStartY + 35
+        ctx.fillStyle = '#475569'
+        ctx.font = '15px Inter, system-ui, sans-serif'
 
-      // Save canvas as image download
-      const dataUrl = canvas.toDataURL('image/png')
-      const link = document.createElement('a')
-      link.download = `Antera_Hiring_${job.slug}.png`
-      link.href = dataUrl
-      link.click()
-    }
+        qualifications.forEach((qual: string, idx: number) => {
+          const qualText = `✓ ${qual}`
+          const maxQualWidth = 700
+          
+          if (ctx.measureText(qualText).width > maxQualWidth) {
+            const truncated = qualText.substring(0, 55) + '...'
+            ctx.fillText(truncated, 40, qualY + (idx * 28))
+          } else {
+            ctx.fillText(qualText, 40, qualY + (idx * 28))
+          }
+        })
 
-    img.onerror = () => {
-      // Fallback if logo fails to load (draw placeholder instead)
-      ctx.fillStyle = '#FA520F'
-      ctx.fillRect(100, 100, 80, 80)
-      ctx.fillStyle = '#FFFFFF'
-      ctx.font = 'bold 40px Arial'
-      ctx.fillText('A', 125, 155)
-
-      // Trigger the load event logic directly as fallback
-      ctx.fillStyle = '#000000'
-      ctx.font = 'bold 32px monospace'
-      ctx.fillText('ANTERA CAREERS', 200, 150)
-
-      ctx.fillStyle = '#FA520F'
-      ctx.font = 'bold 24px monospace'
-      ctx.fillText('WE ARE HIRING!', 200, 185)
-
-      ctx.fillStyle = '#000000'
-      ctx.fillRect(100, 220, 1000, 8)
-
-      ctx.fillStyle = '#000000'
-      ctx.font = 'bold 56px Arial, Helvetica, sans-serif'
-      ctx.fillText(job.title, 100, 320)
-
-      // Meta attributes box
-      ctx.fillStyle = '#FFFFFF'
-      ctx.fillRect(100, 400, 1000, 120)
-      ctx.lineWidth = 6
-      ctx.strokeStyle = '#000000'
-      ctx.strokeRect(100, 400, 1000, 120)
-
-      ctx.fillStyle = '#000000'
-      ctx.font = 'bold 20px monospace'
-      ctx.fillText(`DEPARTMENT: ${job.department.toUpperCase()}`, 130, 445)
-      ctx.fillText(`LOCATION: ${job.location.toUpperCase()}`, 130, 485)
-      ctx.fillText(`TYPE: ${job.employment_type.toUpperCase()}`, 650, 445)
-      if (job.experience_level) {
-        ctx.fillText(`LEVEL: ${job.experience_level.toUpperCase()}`, 650, 485)
+        const gridY = qualY + (qualifications.length * 28) + 40
+        drawFooterGrid(ctx, gridY)
+      } else {
+        const gridY = reqY + (requirements.length * 28) + 40
+        drawFooterGrid(ctx, gridY)
       }
 
-      // Requirements list
-      ctx.fillStyle = '#FA520F'
-      ctx.font = 'bold 28px monospace'
-      ctx.fillText('KEY REQUIREMENTS & SKILLS', 100, 600)
+      function drawFooterGrid(ctx: CanvasRenderingContext2D, gridY: number) {
+        const gridHeight = 110
 
-      ctx.fillStyle = '#000000'
-      ctx.font = '24px Arial, sans-serif'
-      const requirements = job.requirements && job.requirements.length > 0 ? job.requirements.slice(0, 4) : ['General qualifications'];
-      requirements.forEach((req, idx) => {
-        ctx.fillText(`• ${req}`, 100, 660 + (idx * 55))
-      })
+        // Grid background
+        ctx.fillStyle = '#f8fafc'
+        ctx.beginPath()
+        ctx.roundRect(40, gridY, 720, gridHeight, 16)
+        ctx.fill()
 
-      ctx.fillStyle = '#CCCCCC'
-      ctx.fillRect(100, 1020, 1000, 2)
+        // Grid items with better spacing
+        const items = [
+          { label: 'SALARY', value: job.salary_range || 'Competitive', color: '#f97316' },
+          { label: 'LOCATION', value: job.location || 'Tanzania' },
+          { label: 'TYPE', value: job.employment_type || 'Full Time' },
+          { label: 'DEADLINE', value: 'Open' }
+        ]
 
-      ctx.fillStyle = '#FA520F'
-      ctx.font = 'bold 26px monospace'
-      ctx.fillText('APPLY NOW AT: ANTERA.CO.TZ/CAREERS', 100, 1080)
+        const itemWidth = 720 / 4
+        items.forEach((item, idx) => {
+          const x = 40 + (idx * itemWidth) + 20
+
+          // Label
+          ctx.fillStyle = '#94a3b8'
+          ctx.font = 'bold 10px Inter, system-ui, sans-serif'
+          ctx.textBaseline = 'top'
+          ctx.fillText(item.label, x, gridY + 16)
+
+          // Value - with better truncation
+          ctx.fillStyle = item.color || '#0f172a'
+          ctx.font = 'bold 17px Inter, system-ui, sans-serif'
+          let valueText = item.value || 'Not specified'
+          if (valueText.length > 22) {
+            valueText = valueText.substring(0, 20) + '...'
+          }
+          ctx.fillText(valueText, x, gridY + 38)
+        })
+
+        // Bottom CTA Strip
+        ctx.fillStyle = '#94a3b8'
+        ctx.font = '13px Inter, system-ui, sans-serif'
+        ctx.textBaseline = 'top'
+
+        ctx.textAlign = 'left'
+        ctx.fillStyle = '#0f172a'
+        ctx.font = '13px Inter, system-ui, sans-serif'
+        ctx.fillText('Apply at: careers.antera.co.tz', 40, gridY + gridHeight + 28)
+
+        ctx.textAlign = 'right'
+        ctx.fillStyle = '#f97316'
+        ctx.font = 'bold 15px Inter, system-ui, sans-serif'
+        ctx.fillText('APPLY NOW →', 760, gridY + gridHeight + 28)
+        ctx.textAlign = 'left'
+      }
 
       const dataUrl = canvas.toDataURL('image/png')
       const link = document.createElement('a')
@@ -331,7 +349,6 @@ export function PostDetail() {
     e.preventDefault()
     if (!job) return
 
-    // Require either uploaded file url or typed text url
     const finalResume = resumeUrl || 'https://example.com/uploaded_resume.pdf'
     const finalMotivation = motivationLetterUrl || ''
 
@@ -356,7 +373,6 @@ export function PostDetail() {
 
       toast.success('Application submitted successfully! Our recruiters will reach out to you soon.')
       setShowApplyModal(false)
-      // Reset form
       setFullName('')
       setEmail('')
       setPhone('')
@@ -411,15 +427,12 @@ export function PostDetail() {
     <article className="bg-[#FAFAF8] text-black min-h-screen selection:bg-[#FA520F] selection:text-white">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-24 md:py-32">
         <div className="max-w-4xl mx-auto">
-          {/* Back button */}
           <Link to="/jobs" className="group inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-700 hover:text-black transition-colors mb-12">
             <ArrowLeft className="h-4 w-4" />
             back to jobs
           </Link>
 
-          {/* Header */}
           <header className="mb-16">
-            {/* Department & Employment Type */}
             <div className="flex flex-wrap gap-2 mb-6">
               <span className="text-[9px] font-mono font-bold uppercase px-2 py-1 bg-black text-white border border-black">
                 {job.department}
@@ -429,12 +442,10 @@ export function PostDetail() {
               </span>
             </div>
 
-            {/* Title */}
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-normal tracking-[-0.03em] leading-[0.95] text-black mb-8">
               {job.title}
             </h1>
 
-            {/* Key info panel */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-y border-neutral-300 py-6 text-[10px] font-mono font-bold uppercase text-neutral-700">
               <div className="space-y-1">
                 <span className="text-neutral-400 block font-normal">Location</span>
@@ -467,14 +478,12 @@ export function PostDetail() {
             </div>
           </header>
 
-          {/* Description Section */}
           <div className="prose prose-neutral max-w-none mb-16">
             <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Role Description</h2>
             <p className="text-[18px] leading-relaxed text-neutral-700 whitespace-pre-line mb-8">
               {job.description}
             </p>
 
-            {/* Requirements Bullet points */}
             {job.requirements && job.requirements.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Key Requirements & Skills</h2>
@@ -486,7 +495,6 @@ export function PostDetail() {
               </div>
             )}
 
-            {/* Qualifications Bullet points */}
             {job.qualifications && job.qualifications.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Preferred Qualifications</h2>
@@ -498,7 +506,6 @@ export function PostDetail() {
               </div>
             )}
 
-            {/* Benefits Bullet points */}
             {job.benefits && job.benefits.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">What We Offer (Benefits)</h2>
@@ -511,32 +518,27 @@ export function PostDetail() {
             )}
           </div>
 
-          {/* Application Call-To-Action */}
-          <div className="border-4 border-black bg-white p-8 mb-16 shadow-[6px_6px_0px_0px_#000000] relative">
-            <div className="absolute inset-0 border-t-2 border-l-2 border-[#FA520F]/20 pointer-events-none" />
+          <div className="border-2 border-neutral-200 bg-white p-8 mb-16">
             <h3 className="text-3xl font-bold tracking-tight mb-2">Interested in this vacancy?</h3>
-            <p className="text-neutral-600 mb-6 font-mono text-sm">Join Antera and help us pioneer native Swahili language models!</p>
+            <p className="text-neutral-600 mb-6 font-mono text-sm">Join Antera and help us build the future together!</p>
             <button
               onClick={() => setShowApplyModal(true)}
-              className="relative border-4 border-black bg-[#FA520F] px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+              className="bg-[#FA520F] hover:bg-black text-white px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black"
             >
               Apply for this position
             </button>
           </div>
 
-          {/* Share/Download Poster Footer */}
           <footer className="border-t border-neutral-300 pt-8 mt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
-              {/* Poster Creation Download option */}
               <button
                 onClick={downloadPoster}
-                className="relative border-4 border-black bg-[#FA520F] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#000000] transition-all duration-75 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none flex items-center gap-1.5"
+                className="bg-[#FA520F] hover:bg-black text-white px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black flex items-center gap-1.5"
               >
                 <Download className="h-3.5 w-3.5" />
-                Download Beautiful Poster
+                Download Poster
               </button>
 
-              {/* Share buttons */}
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-mono font-bold uppercase text-neutral-700 flex items-center gap-1.5">
                   <Share2 className="h-3.5 w-3.5" />
@@ -544,7 +546,7 @@ export function PostDetail() {
                 </span>
                 <button 
                   onClick={() => share('twitter')}
-                  className="relative border-4 border-black bg-transparent px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black shadow-[3px_3px_0px_0px_#000000] transition-all duration-75 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none hover:bg-black hover:text-white"
+                  className="bg-white hover:bg-black text-black hover:text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-neutral-300 hover:border-black"
                 >
                   <span className="flex items-center gap-1.5">
                     <Twitter className="h-3 w-3" />
@@ -553,7 +555,7 @@ export function PostDetail() {
                 </button>
                 <button 
                   onClick={() => share('linkedin')}
-                  className="relative border-4 border-black bg-transparent px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black shadow-[3px_3px_0px_0px_#000000] transition-all duration-75 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none hover:bg-black hover:text-white"
+                  className="bg-white hover:bg-black text-black hover:text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-neutral-300 hover:border-black"
                 >
                   <span className="flex items-center gap-1.5">
                     <Linkedin className="h-3 w-3" />
@@ -562,7 +564,7 @@ export function PostDetail() {
                 </button>
                 <button 
                   onClick={() => share('whatsapp')}
-                  className="relative border-4 border-black bg-transparent px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black shadow-[3px_3px_0px_0px_#000000] transition-all duration-75 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none hover:bg-black hover:text-white"
+                  className="bg-white hover:bg-black text-black hover:text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-neutral-300 hover:border-black"
                 >
                   <span className="flex items-center gap-1.5">
                     <MessageCircle className="h-3 w-3" />
@@ -571,7 +573,7 @@ export function PostDetail() {
                 </button>
                 <button
                   onClick={() => share('facebook')}
-                  className="relative border-4 border-black bg-transparent px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black shadow-[3px_3px_0px_0px_#000000] transition-all duration-75 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none hover:bg-black hover:text-white"
+                  className="bg-white hover:bg-black text-black hover:text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-neutral-300 hover:border-black"
                 >
                   <span className="flex items-center gap-1.5">
                     Facebook
@@ -583,15 +585,14 @@ export function PostDetail() {
         </div>
       </div>
 
-      {/* Application Modal */}
       {showApplyModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-[#FAFAF8] border-4 border-black p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[8px_8px_0px_0px_#000000]">
+          <div className="bg-[#FAFAF8] border-2 border-neutral-200 p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-neutral-300">
               <h3 className="text-2xl font-bold tracking-tight">Apply for {job.title}</h3>
               <button
                 onClick={() => setShowApplyModal(false)}
-                className="p-1 border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black transition-all font-mono"
+                className="p-1 border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black transition-colors font-mono text-xs font-bold uppercase"
               >
                 CLOSE
               </button>
@@ -642,16 +643,14 @@ export function PostDetail() {
                 </div>
               </div>
 
-              {/* PDF Document Uploads & Link Fallback Inputs */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-dashed border-neutral-300">
-                {/* Resume Upload */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-mono font-bold uppercase text-neutral-700 flex items-center gap-1">
                     <FileText className="h-3.5 w-3.5 text-[#FA520F]" />
                     Upload Resume PDF *
                   </label>
                   <div className="flex items-center gap-2">
-                    <label className="cursor-pointer flex items-center gap-1.5 border-2 border-black bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase hover:bg-neutral-100 transition-colors">
+                    <label className="cursor-pointer flex items-center gap-1.5 border-2 border-neutral-300 hover:border-black bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase transition-colors">
                       <Upload className="h-3.5 w-3.5" />
                       {resumeFile ? resumeFile.name.substring(0, 15) + '...' : 'Choose File'}
                       <input
@@ -674,14 +673,13 @@ export function PostDetail() {
                   />
                 </div>
 
-                {/* Motivation Letter Upload */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-mono font-bold uppercase text-neutral-700 flex items-center gap-1">
                     <FileText className="h-3.5 w-3.5 text-[#FA520F]" />
                     Upload Motivation Letter PDF
                   </label>
                   <div className="flex items-center gap-2">
-                    <label className="cursor-pointer flex items-center gap-1.5 border-2 border-black bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase hover:bg-neutral-100 transition-colors">
+                    <label className="cursor-pointer flex items-center gap-1.5 border-2 border-neutral-300 hover:border-black bg-white px-3 py-2 font-mono text-[10px] font-bold uppercase transition-colors">
                       <Upload className="h-3.5 w-3.5" />
                       {motivationFile ? motivationFile.name.substring(0, 15) + '...' : 'Choose File'}
                       <input
@@ -731,14 +729,14 @@ export function PostDetail() {
                 <button
                   type="button"
                   onClick={() => setShowApplyModal(false)}
-                  className="border-2 border-black bg-transparent px-5 py-2 font-mono text-xs font-bold uppercase"
+                  className="bg-white hover:bg-neutral-100 text-black px-5 py-2 font-mono text-xs font-bold uppercase transition-colors duration-200 border-2 border-neutral-300 hover:border-black"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || isUploadingResume || isUploadingMotivation}
-                  className="border-2 border-black bg-[#FA520F] text-white px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider disabled:opacity-50"
+                  className="bg-[#FA520F] hover:bg-black text-white px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black disabled:opacity-50"
                 >
                   {submitting ? 'Submitting...' : 'Submit Application'}
                 </button>
@@ -748,10 +746,9 @@ export function PostDetail() {
         </div>
       )}
 
-      {/* Scroll to top button */}
       {showScrollTop && (
         <button
-          className="fixed bottom-6 right-6 border-4 border-black bg-white p-3 shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none hover:bg-black hover:text-white z-50"
+          className="fixed bottom-6 right-6 bg-white hover:bg-black text-black hover:text-white p-3 border-2 border-neutral-300 hover:border-black transition-colors duration-200 z-50"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           <ChevronUp className="h-4 w-4" />
