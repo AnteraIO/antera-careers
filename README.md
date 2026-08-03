@@ -1,7 +1,7 @@
 # Join Antera and Shape the Future of Engineering and AI in Africa.
 
 > [!IMPORTANT]
-Join us to design, research, and develop world-class systems with a highly-motivated team.
+Join us to design, research, and develop world-class systems with a highly-motivated team in Tanzania.
 
 <!-- # Welcome to Antera Careeer.
 
