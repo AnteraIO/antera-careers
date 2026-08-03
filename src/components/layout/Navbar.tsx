@@ -80,7 +80,7 @@ export function Navbar() {
               />
             </div>
             <span className="font-black text-black tracking-tighter">
-              Antera Careers
+              Antera
             </span>
           </Link>
 
