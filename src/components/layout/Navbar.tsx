@@ -83,8 +83,8 @@ export function Navbar() {
             <Link to="/" className="flex items-center gap-3 group">
               <div className="h-8 w-8 border-2 border-black flex items-center justify-center overflow-hidden">
                 <img 
-                  src="/duck.png" 
-                  alt="Sheddy.dev logo" 
+                  src="/antera-logo.png" 
+                  alt="Antera logo" 
                   className="h-6 w-6 object-contain"
                   onError={(e) => {
                     console.error('Logo failed to load:', e)
@@ -93,7 +93,7 @@ export function Navbar() {
                 />
               </div>
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-black group-hover:text-[#FA520F] transition-colors hidden sm:inline">
-                sheddy.dev
+                Antera Careers
               </span>
             </Link>
 
