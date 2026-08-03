@@ -28,9 +28,7 @@ export function HomePage() {
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               className="text-5xl md:text-7xl lg:text-8xl font-normal tracking-[-0.03em] leading-[0.95] mb-8 text-white"
             >
-              Build Swahili AI
-              <br />
-              With Antera.
+              Join Antera and Shape the Future of Engineering and AI in Africa.
             </motion.h1>
 
             <motion.p
