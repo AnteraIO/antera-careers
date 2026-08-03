@@ -61,7 +61,7 @@ export function BlogPage() {
           <div className="sm:hidden">
             <button
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-              className="w-full flex items-center justify-between border-4 border-black bg-transparent px-4 py-3 font-mono text-sm font-bold uppercase tracking-wider text-black shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+              className="w-full flex items-center justify-between bg-[#FA520F] hover:bg-black text-white px-4 py-3 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black"
             >
               <span className="flex items-center gap-2">
                 <Filter className="w-4 h-4" />
@@ -71,7 +71,7 @@ export function BlogPage() {
             </button>
             
             {mobileFiltersOpen && (
-              <div className="mt-4 p-6 border-4 border-black bg-white space-y-4">
+              <div className="mt-4 p-6 border-2 border-neutral-200 bg-white space-y-4">
                 <SearchBar />
                 <TagFilter tags={allTags} loading={tagsLoading} />
               </div>
@@ -80,7 +80,7 @@ export function BlogPage() {
 
           {/* Desktop filters */}
           <div className="hidden sm:block">
-            <div className="flex flex-col md:flex-row md:items-center gap-4 p-6 border-4 border-black bg-white">
+            <div className="flex flex-col md:flex-row md:items-center gap-4 p-6 border-2 border-neutral-200 bg-white">
               <SearchBar />
               <TagFilter tags={allTags} loading={tagsLoading} />
             </div>
@@ -97,7 +97,7 @@ export function BlogPage() {
               <a href={`/job/${job.slug}`} className="block p-8 md:p-12 min-h-[420px] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[10px] font-mono font-bold uppercase px-2 py-1 bg-black text-white">
+                    <span className="text-[10px] font-mono font-bold uppercase px-2 py-1 bg-[#FA520F] text-white">
                       {job.employment_type}
                     </span>
                     <span className="text-[10px] font-mono text-neutral-700 uppercase">
@@ -155,7 +155,7 @@ export function BlogPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="relative border-4 border-black bg-transparent px-4 py-2 font-mono text-sm font-bold uppercase tracking-wider text-black shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none disabled:opacity-30 disabled:active:translate-x-0 disabled:active:translate-y-0"
+                className="bg-white hover:bg-neutral-100 text-black px-4 py-2 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-neutral-300 hover:border-black disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -176,10 +176,10 @@ export function BlogPage() {
                       <button
                         key={i}
                         onClick={() => setPage(i)}
-                        className={`relative border-4 border-black px-4 py-2 font-mono text-sm font-bold uppercase tracking-wider transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none ${
+                        className={`px-4 py-2 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 ${
                           page === i 
-                            ? 'bg-[#FA520F] text-white shadow-[4px_4px_0px_0px_#000000]' 
-                            : 'bg-transparent text-black shadow-[4px_4px_0px_0px_#000000] hover:bg-black hover:text-white'
+                            ? 'bg-[#FA520F] text-white border-[#FA520F]' 
+                            : 'bg-white text-black border-neutral-300 hover:border-black hover:bg-neutral-100'
                         }`}
                       >
                         {i}
@@ -193,7 +193,7 @@ export function BlogPage() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="relative border-4 border-black bg-transparent px-4 py-2 font-mono text-sm font-bold uppercase tracking-wider text-black shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none disabled:opacity-30 disabled:active:translate-x-0 disabled:active:translate-y-0"
+                className="bg-white hover:bg-neutral-100 text-black px-4 py-2 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-neutral-300 hover:border-black disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>

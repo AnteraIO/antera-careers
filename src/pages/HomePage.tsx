@@ -37,7 +37,7 @@ export function HomePage() {
               transition={{ delay: 0.2 }}
               className="text-base md:text-lg max-w-2xl leading-relaxed text-white/90 mx-auto mb-10"
             >
-              Antera is a pioneer in NLP and Low-Resource Language AI for African markets. Join us to design, research, and develop world-class systems with a highly-motivated team.
+              Join us to design, research, and develop world-class systems with a highly-motivated team.
             </motion.p>
 
             <motion.div
@@ -47,9 +47,7 @@ export function HomePage() {
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link to="/jobs">
-                <button className="group relative border-4 border-black bg-[#FA520F] px-8 py-3 font-mono text-sm font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none">
-                  <span className="absolute inset-0 border-t-2 border-l-2 border-white/40 pointer-events-none" />
-                  <span className="absolute inset-0 border-b-2 border-r-2 border-black/40 pointer-events-none" />
+                <button className="group bg-[#FA520F] hover:bg-black text-white px-8 py-3 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200">
                   <span className="relative flex items-center gap-2">
                     View Job Openings
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

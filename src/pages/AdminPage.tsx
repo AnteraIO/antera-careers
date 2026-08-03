@@ -147,7 +147,7 @@ export function AdminPage() {
                 <label className="text-[10px] font-mono font-bold uppercase text-neutral-700">Password</label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </div>
-              <button type="submit" className="w-full relative border-4 border-black bg-[#FA520F] px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none">
+              <button type="submit" className="w-full bg-[#FA520F] hover:bg-black text-white px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black">
                 Sign In
               </button>
             </form>
@@ -169,7 +169,7 @@ export function AdminPage() {
               You are logged in as <span className="font-bold text-black">{user.email}</span>,
               but you do not have administrative privileges.
             </p>
-            <button onClick={() => supabase.auth.signOut()} className="w-full relative border-4 border-black bg-transparent px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider text-black shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none hover:bg-black hover:text-white">
+            <button onClick={() => supabase.auth.signOut()} className="w-full bg-white hover:bg-black text-black hover:text-white px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-black">
               Sign Out
             </button>
           </CardContent>
@@ -192,17 +192,21 @@ export function AdminPage() {
 
         {/* Tab Switcher & New Button */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex border-4 border-black font-mono text-xs font-bold uppercase">
+          <div className="flex border-2 border-neutral-200 font-mono text-xs font-bold uppercase">
             <button
               onClick={() => { setActiveTab('jobs'); setEditingJob(null); }}
-              className={`px-4 py-2 flex items-center gap-1.5 transition-colors ${activeTab === 'jobs' ? 'bg-[#FA520F] text-white' : 'bg-transparent text-black hover:bg-neutral-100'}`}
+              className={`px-4 py-2 flex items-center gap-1.5 transition-colors duration-200 ${
+                activeTab === 'jobs' ? 'bg-[#FA520F] text-white' : 'bg-transparent text-black hover:bg-neutral-100'
+              }`}
             >
               <Briefcase className="h-4 w-4" />
               Jobs ({jobs.length})
             </button>
             <button
               onClick={() => { setActiveTab('applications'); setEditingJob(null); }}
-              className={`px-4 py-2 flex items-center gap-1.5 transition-colors ${activeTab === 'applications' ? 'bg-[#FA520F] text-white' : 'bg-transparent text-black hover:bg-neutral-100'}`}
+              className={`px-4 py-2 flex items-center gap-1.5 transition-colors duration-200 ${
+                activeTab === 'applications' ? 'bg-[#FA520F] text-white' : 'bg-transparent text-black hover:bg-neutral-100'
+              }`}
             >
               <ClipboardList className="h-4 w-4" />
               Applications ({applications.length})
@@ -226,7 +230,7 @@ export function AdminPage() {
                 tags: [],
                 published: false
               })}
-              className="relative border-4 border-black bg-[#FA520F] px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none flex items-center gap-2"
+              className="bg-[#FA520F] hover:bg-black text-white px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
               New Vacancy
@@ -239,7 +243,7 @@ export function AdminPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-neutral-200">
             <CardTitle className="text-2xl font-normal tracking-tight">{editingJob.id ? 'Edit Job Opening' : 'Post New Job Vacancy'}</CardTitle>
-            <button onClick={() => setEditingJob(null)} className="p-2 border-4 border-black text-neutral-700 hover:border-black hover:text-black transition-colors">
+            <button onClick={() => setEditingJob(null)} className="p-2 border-2 border-neutral-200 text-neutral-700 hover:border-black hover:text-black transition-colors">
               <X className="h-5 w-5" />
             </button>
           </CardHeader>
@@ -344,10 +348,10 @@ export function AdminPage() {
               </div>
 
               <div className="flex justify-end gap-4 pt-4 border-t border-neutral-200">
-                <button type="button" onClick={() => setEditingJob(null)} className="relative border-4 border-black bg-transparent px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider text-black shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none hover:bg-black hover:text-white">
+                <button type="button" onClick={() => setEditingJob(null)} className="bg-white hover:bg-neutral-100 text-black px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-neutral-300 hover:border-black">
                   Cancel
                 </button>
-                <button type="submit" className="relative border-4 border-black bg-[#FA520F] px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#000000] transition-all duration-75 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none flex items-center gap-2">
+                <button type="submit" className="bg-[#FA520F] hover:bg-black text-white px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black flex items-center gap-2">
                   <Save className="h-4 w-4" />
                   Save vacancy
                 </button>
@@ -424,7 +428,7 @@ export function AdminPage() {
                   <select
                     value={app.status}
                     onChange={(e) => handleApplicationStatus(app.id, e.target.value)}
-                    className="border-2 border-black bg-white px-2 py-1 font-mono text-xs font-bold uppercase tracking-wider text-black focus:outline-none focus:border-[#FA520F]"
+                    className="border-2 border-neutral-300 bg-white px-2 py-1 font-mono text-xs font-bold uppercase tracking-wider text-black focus:outline-none focus:border-[#FA520F] hover:border-black transition-colors"
                   >
                     <option value="Pending">Pending</option>
                     <option value="Reviewing">Reviewing</option>
@@ -450,7 +454,7 @@ export function AdminPage() {
                     href={app.resume_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 border-2 border-black bg-[#FA520F] text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider hover:bg-black transition-colors"
+                    className="inline-flex items-center gap-1.5 bg-[#FA520F] hover:bg-black text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black"
                   >
                     View Resume PDF
                     <ExternalLink className="h-3 w-3" />
@@ -461,7 +465,7 @@ export function AdminPage() {
                     href={app.motivation_letter_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 border-2 border-black bg-[#FA520F] text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider hover:bg-black transition-colors"
+                    className="inline-flex items-center gap-1.5 bg-[#FA520F] hover:bg-black text-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black"
                   >
                     View Motivation Letter PDF
                     <ExternalLink className="h-3 w-3" />
@@ -472,7 +476,7 @@ export function AdminPage() {
                     href={app.linkedin_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 border-2 border-neutral-200 text-neutral-700 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider hover:border-black hover:text-black transition-colors"
+                    className="inline-flex items-center gap-1.5 border-2 border-neutral-300 hover:border-black text-neutral-700 hover:text-black px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200"
                   >
                     LinkedIn Profile
                     <ExternalLink className="h-3 w-3" />
@@ -483,7 +487,7 @@ export function AdminPage() {
                     href={app.portfolio_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 border-2 border-neutral-200 text-neutral-700 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider hover:border-black hover:text-black transition-colors"
+                    className="inline-flex items-center gap-1.5 border-2 border-neutral-300 hover:border-black text-neutral-700 hover:text-black px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors duration-200"
                   >
                     Portfolio / Github
                     <ExternalLink className="h-3 w-3" />
