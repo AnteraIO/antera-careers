@@ -83,7 +83,7 @@ export function Navbar() {
             <Link to="/" className="flex items-center gap-3 group">
               <div className="h-8 w-8 border-2 border-black flex items-center justify-center overflow-hidden">
                 <img 
-                  src="/antera-logo.png" 
+                  src="/antera-logo.jpeg" 
                   alt="Antera logo" 
                   className="h-6 w-6 object-contain"
                   onError={(e) => {
@@ -92,9 +92,6 @@ export function Navbar() {
                   }}
                 />
               </div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-black group-hover:text-[#FA520F] transition-colors hidden sm:inline">
-                Antera Careers
-              </span>
             </Link>
 
             {/* Desktop Navigation */}
