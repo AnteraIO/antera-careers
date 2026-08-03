@@ -77,6 +77,8 @@ export function PostDetail() {
   const downloadPoster = () => {
     if (!job) return
 
+    const jobData = job // Store job reference
+
     const canvas = document.createElement('canvas')
     canvas.width = 800
     canvas.height = 1000
@@ -108,13 +110,15 @@ export function PostDetail() {
     const img = new Image()
     img.src = '/antera-logo.jpeg'
     img.onload = () => {
-      drawPoster(ctx, img)
+      drawPoster(ctx, img, jobData)
     }
     img.onerror = () => {
-      drawPoster(ctx, null)
+      drawPoster(ctx, null, jobData)
     }
 
-    function drawPoster(ctx: CanvasRenderingContext2D, logoImg: HTMLImageElement | null) {
+    function drawPoster(ctx: CanvasRenderingContext2D, logoImg: HTMLImageElement | null, jobData: typeof job) {
+      if (!jobData) return
+
       // Top Branding Section
       if (logoImg) {
         ctx.drawImage(logoImg, 40, 40, 55, 55)
@@ -138,7 +142,7 @@ export function PostDetail() {
 
       ctx.fillStyle = '#f97316'
       ctx.font = '22px Inter, system-ui, sans-serif'
-      const jobTypeText = job.employment_type || 'Full Time'
+      const jobTypeText = jobData.employment_type || 'Full Time'
       ctx.fillText(jobTypeText, 40 + ctx.measureText('is looking for a ').width, 120)
 
       // Job Title
@@ -146,7 +150,7 @@ export function PostDetail() {
       ctx.font = 'bold 56px Inter, system-ui, sans-serif'
       ctx.textBaseline = 'top'
 
-      const words = job.title.split(' ')
+      const words = jobData.title.split(' ')
       let line = ''
       let y = 170
       const maxWidth = 700
@@ -175,8 +179,8 @@ export function PostDetail() {
       ctx.textBaseline = 'top'
       ctx.fillText('KEY REQUIREMENTS', 40, reqStartY)
 
-      const requirements = job.requirements && job.requirements.length > 0
-        ? job.requirements.slice(0, 6)
+      const requirements = jobData.requirements && jobData.requirements.length > 0
+        ? jobData.requirements.slice(0, 6)
         : ['Strong programming skills', 'Effective communication', 'Problem solving capabilities']
 
       let reqY = reqStartY + 35
@@ -197,8 +201,8 @@ export function PostDetail() {
 
       // Qualifications Section
       const qualStartY = reqY + (requirements.length * 28) + 20
-      const qualifications = job.qualifications && job.qualifications.length > 0
-        ? job.qualifications.slice(0, 4)
+      const qualifications = jobData.qualifications && jobData.qualifications.length > 0
+        ? jobData.qualifications.slice(0, 4)
         : []
 
       if (qualifications.length > 0) {
@@ -224,13 +228,15 @@ export function PostDetail() {
         })
 
         const gridY = qualY + (qualifications.length * 28) + 40
-        drawFooterGrid(ctx, gridY)
+        drawFooterGrid(ctx, gridY, jobData)
       } else {
         const gridY = reqY + (requirements.length * 28) + 40
-        drawFooterGrid(ctx, gridY)
+        drawFooterGrid(ctx, gridY, jobData)
       }
 
-      function drawFooterGrid(ctx: CanvasRenderingContext2D, gridY: number) {
+      function drawFooterGrid(ctx: CanvasRenderingContext2D, gridY: number, jobData: typeof job) {
+        if (!jobData) return
+        
         const gridHeight = 110
 
         // Grid background
@@ -241,9 +247,9 @@ export function PostDetail() {
 
         // Grid items with better spacing
         const items = [
-          { label: 'SALARY', value: job.salary_range || 'Competitive', color: '#f97316' },
-          { label: 'LOCATION', value: job.location || 'Tanzania' },
-          { label: 'TYPE', value: job.employment_type || 'Full Time' },
+          { label: 'SALARY', value: jobData.salary_range || 'Competitive', color: '#f97316' },
+          { label: 'LOCATION', value: jobData.location || 'Tanzania' },
+          { label: 'TYPE', value: jobData.employment_type || 'Full Time' },
           { label: 'DEADLINE', value: 'Open' }
         ]
 
@@ -286,7 +292,7 @@ export function PostDetail() {
 
       const dataUrl = canvas.toDataURL('image/png')
       const link = document.createElement('a')
-      link.download = `Antera_Hiring_${job.slug}.png`
+      link.download = `Antera_Hiring_${jobData.slug}.png`
       link.href = dataUrl
       link.click()
     }
