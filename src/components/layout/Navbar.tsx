@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
-import { Menu, LogOut, Briefcase, LayoutDashboard, Home, X } from 'lucide-react'
+import { Menu, Briefcase, LayoutDashboard, Home, X } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useState, useEffect } from 'react'
 
 export function Navbar() {
-  const { user, isAdmin, signOut } = useAuth()
+  const { isAdmin } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  // Prevent body scroll when mobile menu is open
+
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = 'hidden'
