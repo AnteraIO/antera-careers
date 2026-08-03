@@ -3,6 +3,8 @@
 > [!IMPORTANT]
 Join us to design, research, and develop world-class systems with a highly-motivated team in Tanzania.
 
+Copyright © 2026 Antera. All rights reserved.
+
 <!-- # Welcome to Antera Careeer.
 
 # 🛠️ Tech Stack & Key Features
