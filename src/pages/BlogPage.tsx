@@ -2,9 +2,10 @@ import { useJobs } from '@/hooks/useJobs'
 import { SearchBar } from '@/components/common/SearchBar'
 import { TagFilter } from '@/components/common/TagFilter'
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Filter, X, MapPin, Briefcase } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Filter, X, MapPin, Briefcase, ArrowRight } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import turingBg from '@/assets/karpathy.png'
+import { Link } from 'react-router-dom'
 
 export function BlogPage() {
   const [page, setPage] = useState(1)
@@ -45,20 +46,19 @@ export function BlogPage() {
 
   return (
     <div className="bg-[#FAFAF8] text-black min-h-screen selection:bg-[#FA520F] selection:text-white">
-      {/* Hero Section with Background Image */}
+
       <section 
-        className="relative border-b border-neutral-200 bg-cover bg-center bg-no-repeat"
+        className="relative border-b border-neutral-200 bg-cover bg-center bg-no-repeat pt-16 md:pt-20 lg:pt-24"
         style={{
           backgroundImage: `url(${turingBg})`,
         }}
       >
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/60" />
         
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-12 py-24 md:py-32">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-normal tracking-[-0.03em] leading-[0.95] mb-6 text-white">
-              Join the Antera Team.
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium tracking-[-0.02em] leading-[1.1] mb-6 text-white">
+              Join the <span className="text-[#FA520F]">Antera</span> Team.
             </h1>
             <p className="text-base md:text-lg max-w-2xl leading-relaxed text-white/90 mx-auto">
               {totalCount} active job openings. Always Towards Better and Greater things. We are looking for talented individuals to join our team and help us achieve our mission.
@@ -67,7 +67,7 @@ export function BlogPage() {
         </div>
       </section>
 
-      {/* Filters */}
+
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
         <div className="mb-12">
           {/* Mobile filter button */}
@@ -93,21 +93,21 @@ export function BlogPage() {
 
           {/* Desktop filters */}
           <div className="hidden sm:block">
-            <div className="flex flex-col md:flex-row md:items-center gap-4 p-6 border-2 border-neutral-200 bg-white">
+            <div className="flex flex-col md:flex-row md:items-center gap-4 p-6 border border-neutral-200 bg-white">
               <SearchBar />
               <TagFilter tags={allTags} loading={tagsLoading} />
             </div>
           </div>
         </div>
 
-        {/* Jobs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border border-neutral-200 bg-white">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {jobs.map((job, i) => (
             <div
               key={job.id}
-              className={`group border-b ${i % 3 !== 2 ? 'lg:border-r' : ''} ${i < 3 ? 'md:border-b' : ''} border-neutral-200 hover:bg-neutral-50/50 transition-colors`}
+              className="group bg-[#F5F5F5] hover:bg-[#EAEAEA] transition-colors cursor-pointer"
             >
-              <a href={`/job/${job.slug}`} className="block p-8 md:p-12 min-h-[420px] flex flex-col justify-between">
+              <Link to={`/job/${job.slug}`} className="block p-8 md:p-10 min-h-[340px] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-[10px] font-mono font-bold uppercase px-2 py-1 bg-[#FA520F] text-white">
@@ -117,15 +117,15 @@ export function BlogPage() {
                       {job.department}
                     </span>
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-3 group-hover:text-[#FA520F] transition-colors">
+                  <h2 className="text-2xl md:text-3xl font-normal tracking-tight mb-3 group-hover:text-[#FA520F] transition-colors">
                     {job.title}
                   </h2>
-                  <p className="text-base text-neutral-500 leading-relaxed line-clamp-3">
+                  <p className="text-sm text-neutral-600 font-light leading-relaxed line-clamp-3">
                     {job.description}
                   </p>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-neutral-200 space-y-2">
+                <div className="mt-6 pt-4 border-t border-neutral-200/50 space-y-2">
                   <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-neutral-700">
                     <MapPin className="h-3.5 w-3.5 text-[#FA520F]" />
                     <span>{job.location}</span>
@@ -139,14 +139,14 @@ export function BlogPage() {
                   {job.tags && job.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {job.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 border border-neutral-300 text-neutral-600 bg-neutral-100">
+                        <span key={tag} className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 border border-neutral-300 text-neutral-600 bg-white">
                           {tag}
                         </span>
                       ))}
                     </div>
                   )}
                 </div>
-              </a>
+              </Link>
             </div>
           ))}
         </div>
