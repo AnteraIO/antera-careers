@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import { 
   Menu, 
   X, 
-  Globe, 
   ArrowRight, 
   Megaphone,
   Mail,
@@ -10,7 +9,7 @@ import {
   MessageCircle
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 
 const InstagramIcon = () => (

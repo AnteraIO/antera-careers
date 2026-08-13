@@ -1,8 +1,6 @@
-import { Mail, Phone, MessageCircle, ArrowRight } from 'lucide-react'
+import { Mail, Phone, MessageCircle } from 'lucide-react'
 import hero9 from '@/assets/hero-4.jpg'
-import { Link } from 'react-router-dom'
 
-// Social Icons
 const InstagramIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -26,7 +24,6 @@ const LinkedinIcon = () => (
 )
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="relative w-full bg-[#FAFAF8] text-black font-sans antialiased border-t border-neutral-200 overflow-hidden">
