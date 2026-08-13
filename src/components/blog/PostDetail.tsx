@@ -77,7 +77,7 @@ export function PostDetail() {
   const downloadPoster = () => {
     if (!job) return
 
-    const jobData = job // Store job reference
+    const jobData = job
 
     const canvas = document.createElement('canvas')
     canvas.width = 800
@@ -403,7 +403,7 @@ export function PostDetail() {
 
   if (loading) {
     return (
-      <div className="bg-[#FAFAF8] text-black min-h-screen">
+      <div className="bg-[#FAFAF8] text-black min-h-screen pt-16 md:pt-20 lg:pt-24">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-24 md:py-32">
           <div className="max-w-4xl mx-auto">
             <div className="animate-pulse space-y-8">
@@ -423,7 +423,7 @@ export function PostDetail() {
 
   if (error || !job) {
     return (
-      <div className="bg-[#FAFAF8] text-black min-h-screen flex items-center justify-center">
+      <div className="bg-[#FAFAF8] text-black min-h-screen flex items-center justify-center pt-16 md:pt-20 lg:pt-24">
         <div className="text-center">
           <p className="font-mono text-neutral-700">Job vacancy not found</p>
           <Link to="/jobs" className="text-[#FA520F] font-mono text-sm mt-4 inline-block hover:underline">
@@ -435,10 +435,10 @@ export function PostDetail() {
   }
 
   return (
-    <article className="bg-[#FAFAF8] text-black min-h-screen selection:bg-[#FA520F] selection:text-white">
+    <article className="bg-[#FAFAF8] text-black min-h-screen selection:bg-[#FA520F] selection:text-white pt-16 md:pt-20 lg:pt-24">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-24 md:py-32">
         <div className="max-w-4xl mx-auto">
-          <Link to="/jobs" className="group inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-700 hover:text-black transition-colors mb-12">
+          <Link to="/jobs" className="group inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-700 hover:text-[#FA520F] transition-colors mb-12">
             <ArrowLeft className="h-4 w-4" />
             back to jobs
           </Link>
@@ -453,11 +453,11 @@ export function PostDetail() {
               </span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-normal tracking-[-0.03em] leading-[0.95] text-black mb-8">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium tracking-[-0.02em] leading-[1.1] text-black mb-8">
               {job.title}
             </h1>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-y border-neutral-300 py-6 text-[10px] font-mono font-bold uppercase text-neutral-700">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-y border-neutral-200 py-6 text-[10px] font-mono font-bold uppercase text-neutral-700">
               <div className="space-y-1">
                 <span className="text-neutral-400 block font-normal">Location</span>
                 <span className="flex items-center gap-1 text-black">
@@ -489,15 +489,17 @@ export function PostDetail() {
             </div>
           </header>
 
-          <div className="prose prose-neutral max-w-none mb-16">
-            <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Role Description</h2>
-            <p className="text-[18px] leading-relaxed text-neutral-700 whitespace-pre-line mb-8">
-              {job.description}
-            </p>
+          <div className="space-y-8 mb-16">
+            <div>
+              <h2 className="text-2xl font-medium tracking-tight mb-4 text-black">Role Description</h2>
+              <p className="text-[17px] leading-relaxed text-neutral-700 whitespace-pre-line">
+                {job.description}
+              </p>
+            </div>
 
             {job.requirements && job.requirements.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Key Requirements & Skills</h2>
+              <div>
+                <h2 className="text-2xl font-medium tracking-tight mb-4 text-black">Key Requirements & Skills</h2>
                 <ul className="list-disc pl-6 space-y-2 text-[17px] text-neutral-700">
                   {job.requirements.map((req, index) => (
                     <li key={index}>{req}</li>
@@ -507,8 +509,8 @@ export function PostDetail() {
             )}
 
             {job.qualifications && job.qualifications.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">Preferred Qualifications</h2>
+              <div>
+                <h2 className="text-2xl font-medium tracking-tight mb-4 text-black">Preferred Qualifications</h2>
                 <ul className="list-disc pl-6 space-y-2 text-[17px] text-neutral-700">
                   {job.qualifications.map((qual, index) => (
                     <li key={index}>{qual}</li>
@@ -518,8 +520,8 @@ export function PostDetail() {
             )}
 
             {job.benefits && job.benefits.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold tracking-tight mb-4 text-black">What We Offer (Benefits)</h2>
+              <div>
+                <h2 className="text-2xl font-medium tracking-tight mb-4 text-black">What We Offer</h2>
                 <ul className="list-disc pl-6 space-y-2 text-[17px] text-neutral-700">
                   {job.benefits.map((benefit, index) => (
                     <li key={index}>{benefit}</li>
@@ -529,9 +531,10 @@ export function PostDetail() {
             )}
           </div>
 
-          <div className="border-2 border-neutral-200 bg-white p-8 mb-16">
-            <h3 className="text-3xl font-bold tracking-tight mb-2">Interested in this vacancy?</h3>
-            <p className="text-neutral-600 mb-6 font-mono text-sm">Join Antera and help us build the future together!</p>
+          {/* Apply CTA - Antera Style */}
+          <div className="bg-[#F5F5F5] p-8 md:p-10 mb-16 group hover:bg-[#EAEAEA] transition-colors">
+            <h3 className="text-3xl md:text-4xl font-normal tracking-tight mb-2 group-hover:text-[#FA520F] transition-colors">Interested in this vacancy?</h3>
+            <p className="text-neutral-600 mb-6 font-light">Join Antera and help us build the future together!</p>
             <button
               onClick={() => setShowApplyModal(true)}
               className="bg-[#FA520F] hover:bg-black text-white px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-wider transition-colors duration-200 border-2 border-[#FA520F] hover:border-black"
@@ -540,7 +543,8 @@ export function PostDetail() {
             </button>
           </div>
 
-          <footer className="border-t border-neutral-300 pt-8 mt-8">
+          {/* Share & Download Footer */}
+          <footer className="border-t border-neutral-200 pt-8 mt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
               <button
                 onClick={downloadPoster}
@@ -596,14 +600,15 @@ export function PostDetail() {
         </div>
       </div>
 
+      {/* Apply Modal - Antera Style */}
       {showApplyModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
           <div className="bg-[#FAFAF8] border-2 border-neutral-200 p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6 pb-4 border-b border-neutral-300">
-              <h3 className="text-2xl font-bold tracking-tight">Apply for {job.title}</h3>
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-neutral-200">
+              <h3 className="text-2xl font-normal tracking-tight">Apply for <span className="text-[#FA520F]">{job.title}</span></h3>
               <button
                 onClick={() => setShowApplyModal(false)}
-                className="p-1 border-2 border-neutral-300 text-neutral-700 hover:border-black hover:text-black transition-colors font-mono text-xs font-bold uppercase"
+                className="p-1 border-2 border-neutral-200 text-neutral-700 hover:border-black hover:text-black transition-colors font-mono text-xs font-bold uppercase"
               >
                 CLOSE
               </button>
@@ -618,7 +623,7 @@ export function PostDetail() {
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
                     required
-                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                    className="w-full border-2 border-neutral-200 p-2 text-sm focus:border-black outline-none font-mono"
                   />
                 </div>
                 <div className="space-y-1">
@@ -628,7 +633,7 @@ export function PostDetail() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     required
-                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                    className="w-full border-2 border-neutral-200 p-2 text-sm focus:border-black outline-none font-mono"
                   />
                 </div>
               </div>
@@ -640,7 +645,7 @@ export function PostDetail() {
                     type="text"
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
-                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                    className="w-full border-2 border-neutral-200 p-2 text-sm focus:border-black outline-none font-mono"
                   />
                 </div>
                 <div className="space-y-1">
@@ -649,19 +654,19 @@ export function PostDetail() {
                     type="url"
                     value={linkedinUrl}
                     onChange={e => setLinkedinUrl(e.target.value)}
-                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                    className="w-full border-2 border-neutral-200 p-2 text-sm focus:border-black outline-none font-mono"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-dashed border-neutral-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-dashed border-neutral-200">
                 <div className="space-y-2">
                   <label className="text-[10px] font-mono font-bold uppercase text-neutral-700 flex items-center gap-1">
                     <FileText className="h-3.5 w-3.5 text-[#FA520F]" />
                     Upload Resume PDF *
                   </label>
                   <div className="flex flex-col gap-2">
-                    <label className="cursor-pointer flex items-center justify-center gap-1.5 border-2 border-neutral-300 hover:border-black bg-white px-3 py-3 font-mono text-[10px] font-bold uppercase transition-colors text-center">
+                    <label className="cursor-pointer flex items-center justify-center gap-1.5 border-2 border-neutral-200 hover:border-black bg-white px-3 py-3 font-mono text-[10px] font-bold uppercase transition-colors text-center">
                       <Upload className="h-4 w-4 text-[#FA520F]" />
                       {resumeFile ? resumeFile.name : 'Choose Resume PDF'}
                       <input
@@ -684,7 +689,7 @@ export function PostDetail() {
                     Upload Motivation Letter PDF
                   </label>
                   <div className="flex flex-col gap-2">
-                    <label className="cursor-pointer flex items-center justify-center gap-1.5 border-2 border-neutral-300 hover:border-black bg-white px-3 py-3 font-mono text-[10px] font-bold uppercase transition-colors text-center">
+                    <label className="cursor-pointer flex items-center justify-center gap-1.5 border-2 border-neutral-200 hover:border-black bg-white px-3 py-3 font-mono text-[10px] font-bold uppercase transition-colors text-center">
                       <Upload className="h-4 w-4 text-[#FA520F]" />
                       {motivationFile ? motivationFile.name : 'Choose Motivation Letter PDF'}
                       <input
@@ -708,7 +713,7 @@ export function PostDetail() {
                     type="url"
                     value={portfolioUrl}
                     onChange={e => setPortfolioUrl(e.target.value)}
-                    className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                    className="w-full border-2 border-neutral-200 p-2 text-sm focus:border-black outline-none font-mono"
                   />
                 </div>
               </div>
@@ -719,7 +724,7 @@ export function PostDetail() {
                   value={coverLetter}
                   onChange={e => setCoverLetter(e.target.value)}
                   rows={3}
-                  className="w-full border-2 border-neutral-300 p-2 text-sm focus:border-black outline-none font-mono"
+                  className="w-full border-2 border-neutral-200 p-2 text-sm focus:border-black outline-none font-mono"
                   placeholder="Tell us why you are a great fit for this job!"
                 />
               </div>
@@ -728,7 +733,7 @@ export function PostDetail() {
                 <button
                   type="button"
                   onClick={() => setShowApplyModal(false)}
-                  className="bg-white hover:bg-neutral-100 text-black px-5 py-2 font-mono text-xs font-bold uppercase transition-colors duration-200 border-2 border-neutral-300 hover:border-black"
+                  className="bg-white hover:bg-neutral-100 text-black px-5 py-2 font-mono text-xs font-bold uppercase transition-colors duration-200 border-2 border-neutral-200 hover:border-black"
                 >
                   Cancel
                 </button>
@@ -747,7 +752,7 @@ export function PostDetail() {
 
       {showScrollTop && (
         <button
-          className="fixed bottom-6 right-6 bg-white hover:bg-black text-black hover:text-white p-3 border-2 border-neutral-300 hover:border-black transition-colors duration-200 z-50"
+          className="fixed bottom-6 right-6 bg-white hover:bg-black text-black hover:text-white p-3 border-2 border-neutral-200 hover:border-black transition-colors duration-200 z-50"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           <ChevronUp className="h-4 w-4" />
