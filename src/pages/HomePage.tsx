@@ -37,8 +37,6 @@ export function HomePage() {
     return () => clearInterval(interval)
   }, [])
 
-  const titleWords = "Join Antera and Shape the Future of Engineering and AI in Africa.".split(" ")
-
   return (
     <div className="bg-[#FAFAF8] text-black min-h-screen selection:bg-[#FA520F] selection:text-white">
       {/* Hero Section - Styled like Antera hero */}

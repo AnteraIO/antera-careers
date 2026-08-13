@@ -2,7 +2,7 @@ import { useJobs } from '@/hooks/useJobs'
 import { SearchBar } from '@/components/common/SearchBar'
 import { TagFilter } from '@/components/common/TagFilter'
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Filter, X, MapPin, Briefcase, ArrowRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Filter, X, MapPin, Briefcase } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import turingBg from '@/assets/karpathy.png'
 import { Link } from 'react-router-dom'
@@ -102,7 +102,7 @@ export function BlogPage() {
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {jobs.map((job, i) => (
+          {jobs.map((job) => (
             <div
               key={job.id}
               className="group bg-[#F5F5F5] hover:bg-[#EAEAEA] transition-colors cursor-pointer"
